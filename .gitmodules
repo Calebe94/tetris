@@ -1,0 +1,3 @@
+[submodule "lib/seethe"]
+	path = lib/seethe
+	url = https://github.com/jnguyen1098/seethe
