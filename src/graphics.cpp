@@ -28,8 +28,17 @@ bool Graphics::init() {
             SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if (mWindow == NULL)
         {
-            error(" SDL unable to create renderer! SDL Error: %s", SDL_GetError());
+            error("SDL unable to create window! SDL Error: %s", SDL_GetError());
             success = false;
+        }
+    }
+
+    if(success)
+    {
+        mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED);
+        if (mRenderer == NULL)
+        {
+            error("SDL unable to create renderer! SDL Error: %s", SDL_GetError());
         }
     }
 
