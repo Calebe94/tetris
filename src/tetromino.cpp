@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <time.h>
 
 #include "tetromino.h"
 
@@ -45,6 +46,18 @@ Tetromino::Tetromino(shape_t shapeType) {
         shape = shapes[1];
         size = shape.size();
     }
+    color = (color_t)(rand() % 8);
+    for (int row = 0; row < size; ++row)
+    {
+        for (int col = 0; col < size; ++col)
+        {
+            if(shape[row][col])
+            {
+                shape[row][col] = (int)color;
+            }
+        }
+    }
+
 }
 
 // Rotate the Tetromino clockwise

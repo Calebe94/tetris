@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include "colors.h"
 
 typedef enum shape_type {
     I_SHAPE = 0,
@@ -24,4 +25,5 @@ public:
 private:
     std::vector<std::vector<int>> shape;
     int size;
+    color_t color;
 };
