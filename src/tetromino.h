@@ -41,7 +41,7 @@ public:
 private:
     void setColorByShape(shape_t shape);
     std::vector<std::vector<int>> shape;
-    int size;
+    uint32_t size;
     color_t color;
     int x, y;
     Tile tile;

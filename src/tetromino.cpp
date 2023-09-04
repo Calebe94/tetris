@@ -47,9 +47,9 @@ Tetromino::Tetromino(shape_t shapeType) : tile(NULL){
         size = shape.size();
     }
     color = (color_t)(rand() % 8);
-    for (int row = 0; row < size; ++row)
+    for (uint32_t row = 0; row < size; ++row)
     {
-        for (int col = 0; col < size; ++col)
+        for (uint32_t col = 0; col < size; ++col)
         {
             if(shape[row][col])
             {
@@ -98,8 +98,8 @@ void Tetromino::setColorByShape(shape_t shape)
 // Rotate the Tetromino clockwise
 void Tetromino::rotateClockwise() {
     std::vector<std::vector<int>> rotated(size, std::vector<int>(size));
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (uint32_t i = 0; i < size; ++i) {
+        for (uint32_t j = 0; j < size; ++j) {
             rotated[i][j] = shape[size - 1 - j][i];
         }
     }
@@ -109,8 +109,8 @@ void Tetromino::rotateClockwise() {
 // Rotate the Tetromino counterclockwise
 void Tetromino::rotateCounterClockwise() {
     std::vector<std::vector<int>> rotated(size, std::vector<int>(size));
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < size; ++j) {
+    for (uint32_t i = 0; i < size; ++i) {
+        for (uint32_t j = 0; j < size; ++j) {
             rotated[i][j] = shape[j][size - 1 - i];
         }
     }
@@ -130,7 +130,7 @@ int Tetromino::getSize() const {
 void Tetromino::render()
 {
     std::vector<std::vector<int>> shape = getShape();
-    int size = getSize();
+    uint32_t size = getSize();
     for (uint32_t row = 0; row < size; ++row)
     {
         for (uint32_t col = 0; col < size; ++col)
