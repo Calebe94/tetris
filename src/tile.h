@@ -1,3 +1,5 @@
+#ifndef _TILE_H_
+#define _TILE_H_
 #include "SDL2/SDL.h"
 #include "colors.h"
 
@@ -22,3 +24,4 @@ class Tile {
         Color light = LIGHT_COLORS[0];
         Color dark = DARK_COLORS[0];
 };
+#endif

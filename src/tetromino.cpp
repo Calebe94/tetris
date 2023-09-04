@@ -5,7 +5,7 @@
 #include "tetromino.h"
 
 // Constructor to create a Tetromino
-Tetromino::Tetromino(shape_t shapeType) {
+Tetromino::Tetromino(shape_t shapeType) : tile(NULL){
     // Define Tetromino shapes (example shapes)
     // 1 represents the block, 0 represents empty space
     std::vector<std::vector<int>> shapes[7] = {
@@ -58,6 +58,11 @@ Tetromino::Tetromino(shape_t shapeType) {
         }
     }
 
+    // Todo: the tetromino should first appear at the top center of the screen
+    this->x = 0;
+    this->y = 0;
+
+    lastTime = SDL_GetTicks();
 }
 
 // Rotate the Tetromino clockwise
@@ -90,4 +95,60 @@ std::vector<std::vector<int>> Tetromino::getShape() const {
 // Get the size of the Tetromino (e.g., 2 for O-shape, 4 for I-shape)
 int Tetromino::getSize() const {
     return size;
+}
+
+void Tetromino::render()
+{
+    std::vector<std::vector<int>> shape = getShape();
+    int size = getSize();
+    for (uint32_t row = 0; row < size; ++row)
+    {
+        for (uint32_t col = 0; col < size; ++col)
+        {
+            if (shape[row][col])
+            {
+                getTile().drawCell(row, col, getX(), getY());
+            }
+        }
+    }
+}
+
+void Tetromino::tick()
+{
+    if (SDL_GetTicks() - lastTime >= 300) {
+        lastTime = SDL_GetTicks();
+
+        if (y < 600)
+            y+=30;
+    }
+}
+
+void Tetromino::setX(const int x)
+{
+    this->x = x;
+}
+
+void Tetromino::setY(const int y)
+{
+    this->y = y;
+}
+
+int Tetromino::getX()
+{
+    return x;
+}
+
+int Tetromino::getY()
+{
+    return y;
+}
+
+void Tetromino::setTile(const Tile tile)
+{
+    this->tile = tile;
+}
+
+Tile Tetromino::getTile()
+{
+    return tile;
 }
