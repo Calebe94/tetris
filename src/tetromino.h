@@ -36,7 +36,10 @@ public:
     void render();
     void tick();
 
+    void applyColors();
+
 private:
+    void setColorByShape(shape_t shape);
     std::vector<std::vector<int>> shape;
     int size;
     color_t color;

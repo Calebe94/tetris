@@ -61,10 +61,40 @@ Tetromino::Tetromino(shape_t shapeType) : tile(NULL){
     // Todo: the tetromino should first appear at the top center of the screen
     this->x = 0;
     this->y = 0;
-
+    this->setColorByShape(shapeType);
     lastTime = SDL_GetTicks();
 }
 
+void Tetromino::setColorByShape(shape_t shape)
+{
+    switch(shape)
+    {
+        case I_SHAPE:
+            color = CIAN;
+            break;
+        case O_SHAPE:
+            color = YELLOW;
+            break;
+        case T_SHAPE:
+            color = VIOLET;
+            break;
+        case Z_SHAPE:
+            color = RED;
+            break;
+        case S_SHAPE:
+            color = GREEN;
+            break;
+        case J_SHAPE:
+            color = BLUE;
+            break;
+        case L_SHAPE:
+            color = ORANGE;
+            break;
+        default:
+            color = BLACK;
+            break;
+    }
+}
 // Rotate the Tetromino clockwise
 void Tetromino::rotateClockwise() {
     std::vector<std::vector<int>> rotated(size, std::vector<int>(size));
@@ -151,4 +181,9 @@ void Tetromino::setTile(const Tile tile)
 Tile Tetromino::getTile()
 {
     return tile;
+}
+
+void Tetromino::applyColors()
+{
+    this->tile.setColors(BASE_COLORS[this->color], LIGHT_COLORS[this->color], DARK_COLORS[this->color]);
 }
