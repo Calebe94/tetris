@@ -25,7 +25,7 @@ void TetrisGame::run()
 
     // TODO: I should find a way to round up numbers, because at this point the height(672) and width(476) is hard coded and 476/32 is 14.93,
     // I need it to be at least 15
-    this->boardWidth = (this->graphics.getScreenWidth() / 32)+1;
+    this->boardWidth = (this->graphics.getScreenWidth() / 32);
     this->boardHeight = this->graphics.getScreenHeight() / 32;
 
     std::cout << "Board width: " << boardWidth << std::endl;
@@ -77,6 +77,8 @@ void TetrisGame::initializeGame()
     this->quit = !this->graphics.init();
     display_tetromino(this->currentTetromino.getShape());
     srand (time(NULL));
+    currentTetromino.setX((graphics.getScreenWidth()/TILE_SIZE)/2 * TILE_SIZE);
+    currentTetromino.setY(TILE_SIZE * 2);
 }
 
 void TetrisGame::handleEvents()
@@ -94,29 +96,35 @@ void TetrisGame::handleEvents()
             {
                 case SDLK_LEFT:
                     info("Left key!");
-                    if(this->currentTetromino.getX()-30 <= 0)
+                    this->currentTetromino.moveLeft();
+                    if(checkBorderCollisions())
                     {
-                        this->currentTetromino.setX(0);
-                    }
-                    else
-                    {
-                        this->currentTetromino.setX(this->currentTetromino.getX()-30);
+                        this->currentTetromino.moveRight();
                     }
                     break;
                 case SDLK_RIGHT:
-                    if(this->currentTetromino.getX()+30+30 > this->graphics.getScreenWidth())
-                    {
-                        this->currentTetromino.setX(this->graphics.getScreenWidth()-60);
-                    }
-                    else
-                    {
-                        this->currentTetromino.setX(this->currentTetromino.getX()+30);
-                    }
                     info("Right key!");
+                    this->currentTetromino.moveRight();
+                    if(checkBorderCollisions())
+                    {
+                        this->currentTetromino.moveLeft();
+                    }
                     break;
                 case SDLK_DOWN:
                     info("Down key!");
-                    this->currentTetromino.setY(this->currentTetromino.getY()+30);
+                    this->currentTetromino.moveDown();
+                    if(checkBorderCollisions())
+                    {
+                        this->currentTetromino.moveUp();
+                    }
+                    break;
+                case SDLK_UP:
+                    info("UP key!");
+                    this->currentTetromino.moveUp();
+                    if(checkBorderCollisions())
+                    {
+                        this->currentTetromino.moveDown();
+                    }
                     break;
                 case SDLK_SPACE:
                     break;
@@ -153,12 +161,55 @@ void TetrisGame::render()
 
     currentTetromino.tick();
     currentTetromino.render();
+    if(this->isCollision())
+    {
+
+    }
 
     this->graphics.render();
 }
 
+bool TetrisGame::checkBorderCollisions()
+{
+    for (int i = 0; i < currentTetromino.getSize(); ++i) {
+        for (int j = 0; j < currentTetromino.getSize(); ++j) {
+            if (currentTetromino.getShape()[i][j]) {
+                int initial_gridX = (currentTetromino.getX() + j) / TILE_SIZE;
+                int end_gridX = initial_gridX+currentTetromino.getSize()-1;
+                int initial_gridY = (currentTetromino.getY() + i) / TILE_SIZE;
+                int end_gridY = initial_gridY+currentTetromino.getSize()-1;
+
+                if(gameBoard[initial_gridY][initial_gridX] == 255 && gameBoard[initial_gridY][end_gridX] == 255)
+                {
+                    std::cout << "top" << std::endl;
+                    return true;
+                }
+                if(gameBoard[initial_gridY][initial_gridX] == 255 && gameBoard[end_gridY][initial_gridX] == 255)
+                {
+                    std::cout << "left" << std::endl;
+                    return true;
+                }
+
+                if(gameBoard[initial_gridY][end_gridX] == 255 && gameBoard[end_gridY][end_gridX] == 255)
+                {
+                    std::cout << "right" << std::endl;
+                    return true;
+                }
+
+                if(gameBoard[end_gridY][initial_gridX] == 255 && gameBoard[end_gridY][end_gridX] == 255)
+                {
+                    std::cout << "bottom" << std::endl;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 bool TetrisGame::isCollision()
 {
+
     return true;
 }
 

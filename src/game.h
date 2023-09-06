@@ -33,6 +33,7 @@ private:
     bool isCollision();
     void placeTetromino();
     void clearRows();
+    bool checkBorderCollisions();
 };
 
 #endif
