@@ -25,6 +25,7 @@ private:
 
     uint32_t frameStart = 0;
     int frameTime = 0;
+    uint32_t lastTime;
 
     void initializeGame();
     void handleEvents();

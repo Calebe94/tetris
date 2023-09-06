@@ -16,7 +16,7 @@ static void display_tetromino(std::vector<std::vector<int>> shape)
 
 TetrisGame::TetrisGame() : currentTetromino((shape_t)(rand() % 7))
 {
-
+    lastTime = SDL_GetTicks();
 }
 
 void TetrisGame::run()
@@ -33,25 +33,15 @@ void TetrisGame::run()
 
     gameBoard.resize(boardHeight, std::vector<int>(boardWidth, 0));
     std::cout << "Board dimensions: " << gameBoard.size() << " " << gameBoard[0].size() << std::endl;
-
-    for (int row = 0; row < boardHeight; row++)
-    {
+    // Set border values to 255
+    for (int row = 0; row < boardHeight; row++) {
         gameBoard[row][0] = 255;
+        gameBoard[row][boardWidth - 1] = 255;
     }
 
-    for (int row = 0; row < boardHeight; row++)
-    {
-        gameBoard[row][boardWidth-1] = 255;
-    }
-
-    for (int col = 0; col < boardWidth; col++)
-    {
+    for (int col = 0; col < boardWidth; col++) {
         gameBoard[0][col] = 255;
-    }
-
-    for (int col = 0; col < boardWidth; col++)
-    {
-        gameBoard[boardHeight-1][col] = 255;
+        gameBoard[boardHeight - 1][col] = 255;
     }
 
     while(!this->quit)
@@ -135,7 +125,14 @@ void TetrisGame::handleEvents()
 
 void TetrisGame::update()
 {
-
+    if (SDL_GetTicks() - lastTime >= 300) {
+        lastTime = SDL_GetTicks();
+        this->currentTetromino.moveDown();
+        if(checkBorderCollisions())
+        {
+            this->currentTetromino.moveUp();
+        }
+    }
 }
 
 void TetrisGame::render()
