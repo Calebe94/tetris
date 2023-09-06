@@ -37,6 +37,10 @@ public:
     void tick();
 
     void applyColors();
+    void moveLeft();
+    void moveRight();
+    void moveDown();
+    void moveUp();
 
 private:
     void setColorByShape(shape_t shape);

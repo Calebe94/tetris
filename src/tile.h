@@ -3,6 +3,7 @@
 #include "SDL2/SDL.h"
 #include "colors.h"
 
+#define TILE_SIZE 32
 #define GRID_SIZE 32
 
 class Tile {

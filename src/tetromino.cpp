@@ -61,8 +61,10 @@ Tetromino::Tetromino(shape_t shapeType) : tile(NULL){
     // Todo: the tetromino should first appear at the top center of the screen
     this->x = 0;
     this->y = 0;
+
     this->setColorByShape(shapeType);
     lastTime = SDL_GetTicks();
+    std::cout << "Tetromino size: " << size << std::endl;
 }
 
 void Tetromino::setColorByShape(shape_t shape)
@@ -146,10 +148,11 @@ void Tetromino::render()
 void Tetromino::tick()
 {
     if (SDL_GetTicks() - lastTime >= 300) {
+        // std::cout << "Tetomino: i_x " << getX()/TILE_SIZE << ", i_y " << getY()/TILE_SIZE << " - e_x " << (getX()/TILE_SIZE)*size << ", e_y " << (getY()/TILE_SIZE)*size  << std::endl;
         lastTime = SDL_GetTicks();
 
-        if (y < 600)
-            y+=30;
+        // if (y < 600)
+        //     y+=30;
     }
 }
 
@@ -186,4 +189,25 @@ Tile Tetromino::getTile()
 void Tetromino::applyColors()
 {
     this->tile.setColors(BASE_COLORS[this->color], LIGHT_COLORS[this->color], DARK_COLORS[this->color]);
+}
+
+void Tetromino::moveLeft()
+{
+    setX(this->getX()-TILE_SIZE);
+
+}
+
+void Tetromino::moveRight()
+{
+    setX(getX()+TILE_SIZE);
+}
+
+void Tetromino::moveDown()
+{
+    setY(getY()+TILE_SIZE);
+}
+
+void Tetromino::moveUp()
+{
+    setY(getY()-TILE_SIZE);
 }
