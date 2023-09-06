@@ -17,6 +17,8 @@ private:
     Graphics graphics;
     Tetromino currentTetromino;
     std::vector<std::vector<int>> gameBoard;
+    int boardWidth;
+    int boardHeight;
     Uint32 lastMoveTime;
     bool gameOver;
     bool quit = false;
