@@ -4,16 +4,6 @@
 #include <vector>
 #include "game.h"
 
-static void display_tetromino(std::vector<std::vector<int>> shape)
-{
-    for (const auto& row : shape) {
-        for (int value : row) {
-            std::cout << value << ' ';
-        }
-        std::cout << '\n';
-    }
-}
-
 TetrisGame::TetrisGame() : currentTetromino((shape_t)(rand() % 7))
 {
     lastTime = SDL_GetTicks();
@@ -28,13 +18,16 @@ void TetrisGame::run()
     this->boardWidth = (this->graphics.getScreenWidth() / 32);
     this->boardHeight = this->graphics.getScreenHeight() / 32;
 
-    std::cout << "Board width: " << boardWidth << std::endl;
-    std::cout << "Board height: " << boardHeight << std::endl;
+    debug("Board width: %d", boardWidth);
+    debug("Board height: %d", boardHeight);
 
     gameBoard.resize(boardHeight, std::vector<int>(boardWidth, 0));
-    std::cout << "Board dimensions: " << gameBoard.size() << " " << gameBoard[0].size() << std::endl;
+    debug("Board dimensions: %ld %ld", gameBoard.size(), gameBoard[0].size());
 
     createBorders();
+
+    info("Game initialized!");
+
     while(!this->quit)
     {
         this->frameStart = SDL_GetTicks(); // Get the current time
@@ -55,6 +48,7 @@ void TetrisGame::run()
 
 void TetrisGame::initializeGame()
 {
+    debug("Initializing SDL2 graphics...");
     this->quit = !this->graphics.init();
     placeTetromino();
 }
@@ -72,7 +66,7 @@ void TetrisGame::handleEvents()
             switch (event.key.keysym.sym)
             {
                 case SDLK_LEFT:
-                    info("Left key!");
+                    debug("Left key!");
                     this->currentTetromino.moveLeft();
                     if(checkBorderCollisions())
                     {
@@ -80,7 +74,7 @@ void TetrisGame::handleEvents()
                     }
                     break;
                 case SDLK_RIGHT:
-                    info("Right key!");
+                    debug("Right key!");
                     this->currentTetromino.moveRight();
                     if(checkBorderCollisions())
                     {
@@ -88,7 +82,7 @@ void TetrisGame::handleEvents()
                     }
                     break;
                 case SDLK_DOWN:
-                    info("Down key!");
+                    debug("Down key!");
                     this->currentTetromino.moveDown();
                     if(checkBorderCollisions())
                     {
@@ -96,10 +90,10 @@ void TetrisGame::handleEvents()
                     }
                     break;
                 case SDLK_UP:
-                    info("UP key!");
+                    debug("UP key!");
                     this->currentTetromino.rotateClockwise();
-                    std::cout << "vertical: " << this->currentTetromino.getVerticalSize() << std::endl;
-                    std::cout << "horizontal: " << this->currentTetromino.getHorizontalSize() << std::endl;
+                    debug("Tetromino vertical size: %d", this->currentTetromino.getVerticalSize());
+                    debug("Tetromino horizontal size: %d", this->currentTetromino.getHorizontalSize());
                     break;
                 case SDLK_SPACE:
                     break;
@@ -197,14 +191,19 @@ bool TetrisGame::isCollision()
 
 void TetrisGame::placeTetromino()
 {
+    debug("Placing a tetromino...");
     // Create a new random Tetromino
     currentTetromino = Tetromino((shape_t)(rand() % 7));
     if(!currentTetromino.isEmpty())
     {
-        std::cout << "Empty Tetromino" << std::endl;
+        debug("Empty Tetromino");
         // Alternative technical solution
         placeTetromino();
     }
+
+    currentTetromino.print();
+
+    debug("Placing tetromino at the center top of the screen...");
     currentTetromino.setX((graphics.getScreenWidth()/TILE_SIZE)/2 * TILE_SIZE);
     currentTetromino.setY(TILE_SIZE);
 }
@@ -277,21 +276,29 @@ void TetrisGame::appendTetrominoToGameBoard() {
 
 void TetrisGame::displayGrid()
 {
+    debug("Displaying the game Grid...");
     for (int row = 0; row < boardHeight; row++)
     {
         for (int col = 0; col < boardWidth; col++)
         {
             if(gameBoard[row][col]==255)
             {
+                #if LOG_LEVEL < INFO
                 std::cout << "# ";
+                #endif
             }
             else
             {
+                #if LOG_LEVEL < INFO
                 std::cout << gameBoard[row][col] << " ";
+                #endif
             }
         }
+        #if LOG_LEVEL < INFO
         std::cout << std::endl;
+        #endif
     }
+    debug("done!");
 }
 
 void TetrisGame::createBorders()

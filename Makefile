@@ -14,7 +14,7 @@ FLAGS=-Wall -Wextra
 # FLAGS+=-fanalyzer
 LIBS='-Wl,-rpath,$$ORIGIN' $(SDL2_FLAGS) -l SDL2_image -l SDL2_mixer -l SDL2_ttf ${INCLUDE_PATH}
 
-MACROS=-DLOG_LEVEL=DEBUG
+MACROS=-DLOG_LEVEL=INFO
 
 OUTPUT_DIR=bin/
 BIN=bin/${TITLE}
@@ -23,7 +23,7 @@ ${OUTPUT_DIR}:
 	@mkdir -p ${OUTPUT_DIR}
 
 compile: ${OUTPUT_DIR}
-	@$(CC) $(FLAGS) $(SOURCE) $(LIBS) -o $(BIN)
+	@$(CC) $(FLAGS) $(SOURCE) $(LIBS) -o $(BIN) $(MACROS)
 
 run: compile
 	$(BIN)

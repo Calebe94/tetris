@@ -2,17 +2,8 @@
 #include <vector>
 #include <time.h>
 
+#include "seethe.h"
 #include "tetromino.h"
-
-static void display_tetromino(std::vector<std::vector<int>> shape)
-{
-    for (const auto& row : shape) {
-        for (int value : row) {
-            std::cout << value << ' ';
-        }
-        std::cout << '\n';
-    }
-}
 
 // Constructor to create a Tetromino
 Tetromino::Tetromino(shape_t shapeType) : tile(NULL){
@@ -115,7 +106,7 @@ void Tetromino::rotateClockwise() {
         }
     }
     shape = rotated;
-    display_tetromino(shape);
+    print();
 }
 
 // Rotate the Tetromino counterclockwise
@@ -127,7 +118,7 @@ void Tetromino::rotateCounterClockwise() {
         }
     }
     shape = rotated;
-    display_tetromino(shape);
+    print();
 }
 
 // Get the current shape of the Tetromino
@@ -263,4 +254,16 @@ bool Tetromino::isEmpty() const
         }
     }
     return false;
+}
+
+void Tetromino::print()
+{
+    #if LOG_LEVEL < INFO
+    for (const auto& row : getShape()) {
+        for (int value : row) {
+            std::cout << value << ' ';
+        }
+        std::cout << '\n';
+    }
+    #endif
 }
