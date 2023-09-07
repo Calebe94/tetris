@@ -7,7 +7,7 @@ public:
     int getScore() const;
     void addPoints(int points);
     void reset();
-
+    int calculatePoints(int linesCleared);
 private:
     int score;
 };

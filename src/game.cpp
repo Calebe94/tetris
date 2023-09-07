@@ -251,6 +251,17 @@ void TetrisGame::clearRows() {
             }
         }
 
+        // Calculate the points based on the number of rows cleared
+        int linesCleared = rowsToClear.size();
+        if(linesCleared > 0)
+        {
+            int pointsToAdd = playerScore.calculatePoints(linesCleared);
+
+            info("Lines cleared: %d, points to add: %d", linesCleared, pointsToAdd);
+            // Add the points to the player's score
+            playerScore.addPoints(pointsToAdd);
+            info("Score: %d", playerScore.getScore());
+        }
         rowsToClear.clear();
     } while (rowsCleared);
 }

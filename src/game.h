@@ -3,6 +3,8 @@
 
 #include "graphics.h"
 #include "tetromino.h"
+#include "score.h"
+#include "level.h"
 #include <vector>
 
 #define FPS          60
@@ -26,6 +28,9 @@ private:
     uint32_t frameStart = 0;
     int frameTime = 0;
     uint32_t lastTime;
+
+    Score playerScore;
+    Level playerLevel;
 
     void initializeGame();
     void handleEvents();
