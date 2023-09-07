@@ -194,7 +194,7 @@ bool TetrisGame::checkBorderCollisions() {
                 int gridX = (tetrominoX + j * TILE_SIZE) / TILE_SIZE;
                 int gridY = (tetrominoY + i * TILE_SIZE) / TILE_SIZE;
 
-                if (gridX < 0 || gridX >= boardWidth || gridY >= boardHeight || gameBoard[gridY][gridX] == 255) {
+                if (gridX < 0 || gridX >= boardWidth || gridY >= boardHeight || gameBoard[gridY][gridX]) {
                     return true;
                 }
             }
