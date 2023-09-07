@@ -74,7 +74,6 @@ Tetromino::Tetromino(shape_t shapeType) : tile(NULL){
 
     this->setColorByShape(shapeType);
     lastTime = SDL_GetTicks();
-    std::cout << "Tetromino size: " << size << std::endl;
 }
 
 void Tetromino::setColorByShape(shape_t shape)
@@ -253,4 +252,15 @@ int Tetromino::getHorizontalSize() const
     }
 
     return horizontalSize;
+}
+
+bool Tetromino::isEmpty() const
+{
+    for (const auto& row : getShape()) {
+        for (int value : row) {
+            if(value)
+                return true;
+        }
+    }
+    return false;
 }

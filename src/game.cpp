@@ -188,8 +188,8 @@ bool TetrisGame::checkBorderCollisions() {
     int tetrominoVerticalSize = currentTetromino.getVerticalSize();
     int tetrominoHorizontalSize = currentTetromino.getHorizontalSize();
 
-    for (int i = 0; i < tetrominoVerticalSize; i++) {
-        for (int j = 0; j < tetrominoHorizontalSize; ++j) {
+    for (int i = 0; i < currentTetromino.getSize(); i++) {
+        for (int j = 0; j < currentTetromino.getSize(); ++j) {
             if (tetrominoShape[i][j]) {
                 int gridX = (tetrominoX + j * TILE_SIZE) / TILE_SIZE;
                 int gridY = (tetrominoY + i * TILE_SIZE) / TILE_SIZE;
@@ -253,6 +253,12 @@ void TetrisGame::placeTetromino()
 {
     // Create a new random Tetromino
     currentTetromino = Tetromino((shape_t)(rand() % 7));
+    if(!currentTetromino.isEmpty())
+    {
+        std::cout << "Empty Tetromino" << std::endl;
+        // Alternative technical solution
+        placeTetromino();
+    }
     currentTetromino.setX((graphics.getScreenWidth()/TILE_SIZE)/2 * TILE_SIZE);
     currentTetromino.setY(TILE_SIZE * 2);
 }
@@ -269,18 +275,17 @@ void TetrisGame::appendTetrominoToGameBoard() {
 
     for (int i = 0; i < currentTetromino.getSize(); ++i) {
         for (int j = 0; j < currentTetromino.getSize(); ++j) {
-            std::cout << shape[i][j];
+            // std::cout << shape[i][j];
             if (shape[i][j]) {
                 // Calculate the position of the cell in grid coordinates
                 int gridX = (x + j * TILE_SIZE) / TILE_SIZE;
                 int gridY = (y + i * TILE_SIZE) / TILE_SIZE;
 
-                std::cout << "x: "<< gridX << " - y: " << gridY;
                 // Set the corresponding cell in the gameBoard to 1
                 gameBoard[gridY][gridX] = currentTetromino.getColorId();;
             }
         }
-        std::cout << std::endl;
+        // std::cout << std::endl;
     }
 }
 
@@ -292,7 +297,7 @@ void TetrisGame::displayGrid()
         {
             if(gameBoard[row][col]==255)
             {
-                std::cout << "* ";
+                std::cout << "# ";
             }
             else
             {

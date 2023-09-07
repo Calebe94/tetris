@@ -47,6 +47,8 @@ public:
     int getVerticalSize() const;
     int getHorizontalSize() const;
 
+    bool isEmpty() const;
+
 
 private:
     void setColorByShape(shape_t shape);
