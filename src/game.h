@@ -31,6 +31,7 @@ private:
 
     Score playerScore;
     Level playerLevel;
+    int updateTetrominoTime;
 
     void initializeGame();
     void handleEvents();
@@ -44,6 +45,9 @@ private:
     void createBorders();
 
     void displayGrid();
+
+    void increaseScore(int points);
+    void levelUp();
 };
 
 #endif

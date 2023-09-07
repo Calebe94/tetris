@@ -6,6 +6,7 @@ public:
     Level();
 
     int getCurrentLevel() const;
+    void levelUp();
     int getLinesCleared() const;
     void linesClearedEvent(int lines);
     void reset();

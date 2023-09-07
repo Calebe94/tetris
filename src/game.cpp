@@ -7,6 +7,7 @@
 TetrisGame::TetrisGame() : currentTetromino((shape_t)(rand() % 7))
 {
     lastTime = SDL_GetTicks();
+    updateTetrominoTime = 300;
 }
 
 void TetrisGame::run()
@@ -105,7 +106,7 @@ void TetrisGame::handleEvents()
 void TetrisGame::update()
 {
     currentTetromino.tick();
-    if (SDL_GetTicks() - lastTime >= 300) {
+    if (SDL_GetTicks() - lastTime >= (uint32_t)(updateTetrominoTime - playerLevel.getCurrentLevel()*15)) {
         lastTime = SDL_GetTicks();
         this->currentTetromino.moveDown();
         // Check for collisions with the bottom border or other tiles
@@ -256,11 +257,7 @@ void TetrisGame::clearRows() {
         if(linesCleared > 0)
         {
             int pointsToAdd = playerScore.calculatePoints(linesCleared);
-
-            info("Lines cleared: %d, points to add: %d", linesCleared, pointsToAdd);
-            // Add the points to the player's score
-            playerScore.addPoints(pointsToAdd);
-            info("Score: %d", playerScore.getScore());
+            increaseScore(pointsToAdd);
         }
         rowsToClear.clear();
     } while (rowsCleared);
@@ -324,4 +321,26 @@ void TetrisGame::createBorders()
         gameBoard[0][col] = 255;
         gameBoard[boardHeight - 1][col] = 255;
     }
+}
+
+void TetrisGame::increaseScore(int points) {
+    playerScore.addPoints(points);
+
+    info("Score: %d", playerScore.getScore());
+    // Check if the player should level up based on your criteria
+    if (playerScore.getScore() >= (playerLevel.getCurrentLevel()*1000))
+    {
+        levelUp();
+    }
+}
+
+void TetrisGame::levelUp() {
+    // Increase the player's level
+    playerLevel.levelUp();
+
+    // TODO: Add logic to make the game more challenging at higher levels
+    // For example, increase the game speed or introduce new Tetrominoes
+
+    // You can print a message or perform any actions specific to leveling up here
+    info("Level Up! You are now at Level %d", playerLevel.getCurrentLevel());
 }

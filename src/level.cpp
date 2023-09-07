@@ -6,6 +6,11 @@ int Level::getCurrentLevel() const {
     return level;
 }
 
+void Level::levelUp()
+{
+    level++;
+}
+
 int Level::getLinesCleared() const {
     return linesCleared;
 }
