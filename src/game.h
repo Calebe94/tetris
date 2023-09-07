@@ -35,6 +35,9 @@ private:
     void placeTetromino();
     void clearRows();
     bool checkBorderCollisions();
+    void appendTetrominoToGameBoard();
+
+    void displayGrid();
 };
 
 #endif

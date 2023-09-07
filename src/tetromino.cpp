@@ -4,6 +4,16 @@
 
 #include "tetromino.h"
 
+static void display_tetromino(std::vector<std::vector<int>> shape)
+{
+    for (const auto& row : shape) {
+        for (int value : row) {
+            std::cout << value << ' ';
+        }
+        std::cout << '\n';
+    }
+}
+
 // Constructor to create a Tetromino
 Tetromino::Tetromino(shape_t shapeType) : tile(NULL){
     // Define Tetromino shapes (example shapes)
@@ -106,6 +116,7 @@ void Tetromino::rotateClockwise() {
         }
     }
     shape = rotated;
+    display_tetromino(shape);
 }
 
 // Rotate the Tetromino counterclockwise
@@ -117,6 +128,7 @@ void Tetromino::rotateCounterClockwise() {
         }
     }
     shape = rotated;
+    display_tetromino(shape);
 }
 
 // Get the current shape of the Tetromino
@@ -147,13 +159,7 @@ void Tetromino::render()
 
 void Tetromino::tick()
 {
-    if (SDL_GetTicks() - lastTime >= 300) {
-        // std::cout << "Tetomino: i_x " << getX()/TILE_SIZE << ", i_y " << getY()/TILE_SIZE << " - e_x " << (getX()/TILE_SIZE)*size << ", e_y " << (getY()/TILE_SIZE)*size  << std::endl;
-        lastTime = SDL_GetTicks();
 
-        // if (y < 600)
-        //     y+=30;
-    }
 }
 
 void Tetromino::setX(const int x)
@@ -210,4 +216,41 @@ void Tetromino::moveDown()
 void Tetromino::moveUp()
 {
     setY(getY()-TILE_SIZE);
+}
+
+color_t Tetromino::getColorId()
+{
+    return color;
+}
+
+int Tetromino::getVerticalSize() const
+{
+    int verticalSize = 0;
+
+    for (const auto& row : shape) {
+        for (int cell : row) {
+            if (cell != 0) {
+                verticalSize++;
+                break; // Only count each row once
+            }
+        }
+    }
+
+    return verticalSize;
+}
+
+int Tetromino::getHorizontalSize() const
+{
+    int horizontalSize = 0;
+
+    for (size_t col = 0; col < shape[0].size(); ++col) {
+        for (size_t row = 0; row < shape.size(); ++row) {
+            if (shape[row][col] != 0) {
+                horizontalSize++;
+                break; // Only count each column once
+            }
+        }
+    }
+
+    return horizontalSize;
 }

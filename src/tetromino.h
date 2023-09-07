@@ -42,6 +42,12 @@ public:
     void moveDown();
     void moveUp();
 
+    color_t getColorId();
+
+    int getVerticalSize() const;
+    int getHorizontalSize() const;
+
+
 private:
     void setColorByShape(shape_t shape);
     std::vector<std::vector<int>> shape;

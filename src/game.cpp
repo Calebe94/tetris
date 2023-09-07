@@ -65,10 +65,11 @@ void TetrisGame::run()
 void TetrisGame::initializeGame()
 {
     this->quit = !this->graphics.init();
-    display_tetromino(this->currentTetromino.getShape());
-    srand (time(NULL));
-    currentTetromino.setX((graphics.getScreenWidth()/TILE_SIZE)/2 * TILE_SIZE);
-    currentTetromino.setY(TILE_SIZE * 2);
+    // display_tetromino(this->currentTetromino.getShape());
+    // srand (time(NULL));
+    // currentTetromino.setX((graphics.getScreenWidth()/TILE_SIZE)/2 * TILE_SIZE);
+    // currentTetromino.setY(TILE_SIZE * 2);
+    placeTetromino();
 }
 
 void TetrisGame::handleEvents()
@@ -110,11 +111,9 @@ void TetrisGame::handleEvents()
                     break;
                 case SDLK_UP:
                     info("UP key!");
-                    this->currentTetromino.moveUp();
-                    if(checkBorderCollisions())
-                    {
-                        this->currentTetromino.moveDown();
-                    }
+                    this->currentTetromino.rotateClockwise();
+                    std::cout << "vertical: " << this->currentTetromino.getVerticalSize() << std::endl;
+                    std::cout << "horizontal: " << this->currentTetromino.getHorizontalSize() << std::endl;
                     break;
                 case SDLK_SPACE:
                     break;
@@ -125,12 +124,27 @@ void TetrisGame::handleEvents()
 
 void TetrisGame::update()
 {
+    currentTetromino.tick();
     if (SDL_GetTicks() - lastTime >= 300) {
         lastTime = SDL_GetTicks();
         this->currentTetromino.moveDown();
-        if(checkBorderCollisions())
-        {
-            this->currentTetromino.moveUp();
+        // Check for collisions with the bottom border or other tiles
+        if (checkBorderCollisions()) {
+        // if (checkBorderCollisions() || checkTileCollisions()) {
+            // Revert the move if a collision occurs
+            currentTetromino.moveUp();
+
+            // Append the shape of the Tetromino to the gameBoard
+            appendTetrominoToGameBoard();
+
+            // Check for and clear completed rows (not shown in this code)
+            clearRows();
+
+            // Display the gameBoard
+            displayGrid();
+
+            // Place another tetromino
+            placeTetromino();
         }
     }
 }
@@ -140,7 +154,6 @@ void TetrisGame::render()
     this->graphics.clear();
 
     Tile tile = Tile(this->graphics.getRenderer());
-    tile.setColors(BASE_COLORS[0], LIGHT_COLORS[0], DARK_COLORS[0]);
 
     for (int row = 0; row < this->boardHeight; row++)
     {
@@ -148,6 +161,13 @@ void TetrisGame::render()
         {
             if(gameBoard[row][col] == 255)
             {
+                tile.setColors(BASE_COLORS[0], LIGHT_COLORS[0], DARK_COLORS[0]);
+                tile.drawCell(0, 0, col*32, row*32);
+            }
+            else if(gameBoard[row][col] == 0); // Do nothing, for now
+            else
+            {
+                tile.setColors(BASE_COLORS[gameBoard[row][col]], LIGHT_COLORS[gameBoard[row][col]], DARK_COLORS[gameBoard[row][col]]);
                 tile.drawCell(0, 0, col*32, row*32);
             }
         }
@@ -156,53 +176,72 @@ void TetrisGame::render()
     currentTetromino.setTile(tile);
     currentTetromino.applyColors();
 
-    currentTetromino.tick();
     currentTetromino.render();
-    if(this->isCollision())
-    {
-
-    }
 
     this->graphics.render();
 }
 
-bool TetrisGame::checkBorderCollisions()
-{
-    for (int i = 0; i < currentTetromino.getSize(); ++i) {
-        for (int j = 0; j < currentTetromino.getSize(); ++j) {
-            if (currentTetromino.getShape()[i][j]) {
-                int initial_gridX = (currentTetromino.getX() + j) / TILE_SIZE;
-                int end_gridX = initial_gridX+currentTetromino.getSize()-1;
-                int initial_gridY = (currentTetromino.getY() + i) / TILE_SIZE;
-                int end_gridY = initial_gridY+currentTetromino.getSize()-1;
+bool TetrisGame::checkBorderCollisions() {
+    std::vector<std::vector<int>> tetrominoShape = currentTetromino.getShape();
+    int tetrominoX = currentTetromino.getX();
+    int tetrominoY = currentTetromino.getY();
+    int tetrominoVerticalSize = currentTetromino.getVerticalSize();
+    int tetrominoHorizontalSize = currentTetromino.getHorizontalSize();
 
-                if(gameBoard[initial_gridY][initial_gridX] == 255 && gameBoard[initial_gridY][end_gridX] == 255)
-                {
-                    std::cout << "top" << std::endl;
-                    return true;
-                }
-                if(gameBoard[initial_gridY][initial_gridX] == 255 && gameBoard[end_gridY][initial_gridX] == 255)
-                {
-                    std::cout << "left" << std::endl;
-                    return true;
-                }
+    for (int i = 0; i < tetrominoVerticalSize; i++) {
+        for (int j = 0; j < tetrominoHorizontalSize; ++j) {
+            if (tetrominoShape[i][j]) {
+                int gridX = (tetrominoX + j * TILE_SIZE) / TILE_SIZE;
+                int gridY = (tetrominoY + i * TILE_SIZE) / TILE_SIZE;
 
-                if(gameBoard[initial_gridY][end_gridX] == 255 && gameBoard[end_gridY][end_gridX] == 255)
-                {
-                    std::cout << "right" << std::endl;
-                    return true;
-                }
-
-                if(gameBoard[end_gridY][initial_gridX] == 255 && gameBoard[end_gridY][end_gridX] == 255)
-                {
-                    std::cout << "bottom" << std::endl;
+                if (gridX < 0 || gridX >= boardWidth || gridY >= boardHeight || gameBoard[gridY][gridX] == 255) {
                     return true;
                 }
             }
         }
     }
+
     return false;
 }
+// bool TetrisGame::checkBorderCollisions()
+// {
+//     for (int i = 0; i < currentTetromino.getSize(); i++)
+//     {
+//         for (int j = 0; j < currentTetromino.getSize(); ++j)
+//         {
+//             if (currentTetromino.getShape()[i][j]) {
+//                 int initial_gridX = (currentTetromino.getX() + j) / TILE_SIZE;
+//                 int end_gridX = initial_gridX+currentTetromino.getHorizontalSize();
+//                 int initial_gridY = (currentTetromino.getY() + i) / TILE_SIZE;
+//                 int end_gridY = initial_gridY+currentTetromino.getVerticalSize();
+
+//                 if(gameBoard[initial_gridY][initial_gridX] == 255 && gameBoard[initial_gridY][end_gridX] == 255)
+//                 {
+//                     std::cout << "top" << std::endl;
+//                     return true;
+//                 }
+//                 if(gameBoard[initial_gridY][initial_gridX] == 255 && gameBoard[end_gridY][initial_gridX] == 255)
+//                 {
+//                     std::cout << "left" << std::endl;
+//                     return true;
+//                 }
+
+//                 if(gameBoard[initial_gridY][end_gridX] == 255 && gameBoard[end_gridY][end_gridX] == 255)
+//                 {
+//                     std::cout << "right" << std::endl;
+//                     return true;
+//                 }
+
+//                 if(gameBoard[end_gridY][initial_gridX] == 255 && gameBoard[end_gridY][end_gridX] == 255)
+//                 {
+//                     std::cout << "bottom" << std::endl;
+//                     return true;
+//                 }
+//             }
+//         }
+//     }
+//     return false;
+// }
 
 bool TetrisGame::isCollision()
 {
@@ -212,10 +251,54 @@ bool TetrisGame::isCollision()
 
 void TetrisGame::placeTetromino()
 {
-
+    // Create a new random Tetromino
+    currentTetromino = Tetromino((shape_t)(rand() % 7));
+    currentTetromino.setX((graphics.getScreenWidth()/TILE_SIZE)/2 * TILE_SIZE);
+    currentTetromino.setY(TILE_SIZE * 2);
 }
 
 void TetrisGame::clearRows()
 {
 
+}
+
+void TetrisGame::appendTetrominoToGameBoard() {
+    std::vector<std::vector<int>> shape = currentTetromino.getShape();
+    int x = currentTetromino.getX();
+    int y = currentTetromino.getY();
+
+    for (int i = 0; i < currentTetromino.getSize(); ++i) {
+        for (int j = 0; j < currentTetromino.getSize(); ++j) {
+            std::cout << shape[i][j];
+            if (shape[i][j]) {
+                // Calculate the position of the cell in grid coordinates
+                int gridX = (x + j * TILE_SIZE) / TILE_SIZE;
+                int gridY = (y + i * TILE_SIZE) / TILE_SIZE;
+
+                std::cout << "x: "<< gridX << " - y: " << gridY;
+                // Set the corresponding cell in the gameBoard to 1
+                gameBoard[gridY][gridX] = currentTetromino.getColorId();;
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+void TetrisGame::displayGrid()
+{
+    for (int row = 0; row < boardHeight; row++)
+    {
+        for (int col = 0; col < boardWidth; col++)
+        {
+            if(gameBoard[row][col]==255)
+            {
+                std::cout << "* ";
+            }
+            else
+            {
+                std::cout << gameBoard[row][col] << " ";
+            }
+        }
+        std::cout << std::endl;
+    }
 }
