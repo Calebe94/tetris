@@ -33,17 +33,8 @@ void TetrisGame::run()
 
     gameBoard.resize(boardHeight, std::vector<int>(boardWidth, 0));
     std::cout << "Board dimensions: " << gameBoard.size() << " " << gameBoard[0].size() << std::endl;
-    // Set border values to 255
-    for (int row = 0; row < boardHeight; row++) {
-        gameBoard[row][0] = 255;
-        gameBoard[row][boardWidth - 1] = 255;
-    }
 
-    for (int col = 0; col < boardWidth; col++) {
-        gameBoard[0][col] = 255;
-        gameBoard[boardHeight - 1][col] = 255;
-    }
-
+    createBorders();
     while(!this->quit)
     {
         this->frameStart = SDL_GetTicks(); // Get the current time
@@ -139,6 +130,8 @@ void TetrisGame::update()
 
             // Check for and clear completed rows (not shown in this code)
             clearRows();
+
+            createBorders();
 
             // Display the gameBoard
             displayGrid();
@@ -252,7 +245,8 @@ bool TetrisGame::isCollision()
 void TetrisGame::placeTetromino()
 {
     // Create a new random Tetromino
-    currentTetromino = Tetromino((shape_t)(rand() % 7));
+    currentTetromino = Tetromino((shape_t)0);
+    // currentTetromino = Tetromino((shape_t)(rand() % 7));
     if(!currentTetromino.isEmpty())
     {
         std::cout << "Empty Tetromino" << std::endl;
@@ -260,12 +254,54 @@ void TetrisGame::placeTetromino()
         placeTetromino();
     }
     currentTetromino.setX((graphics.getScreenWidth()/TILE_SIZE)/2 * TILE_SIZE);
-    currentTetromino.setY(TILE_SIZE * 2);
+    currentTetromino.setY(TILE_SIZE);
 }
 
-void TetrisGame::clearRows()
-{
+void TetrisGame::clearRows() {
+    bool rowsCleared;
+    std::vector<int> rowsToClear;
+    do {
+        rowsCleared = false;
 
+        // Iterate through the game board from bottom to top, excluding the top border
+        for (int row = boardHeight - 2; row >= 1; --row) {
+            bool rowIsFull = true;
+
+            // Check if the current row is full (no empty cells)
+            for (int col = 1; col < boardWidth - 1; ++col) {
+                if (gameBoard[row][col] == 0) {
+                    rowIsFull = false;
+                    break;
+                }
+            }
+
+            // If the row is full, mark it for clearing
+            if (rowIsFull) {
+                rowsToClear.push_back(row);
+                rowsCleared = true;
+            }
+        }
+
+        // Clear marked rows and shift above rows down
+        for (int rowToClear : rowsToClear) {
+            for (int row = rowToClear; row >= 1; --row) {
+                for (int col = 1; col < boardWidth - 1; ++col) {
+                    gameBoard[row][col] = gameBoard[row - 1][col];
+                }
+            }
+        }
+
+        // Clear border tiles
+        for (int row = 0; row < this->boardHeight; row++) {
+            for (int col = 0; col < this->boardWidth; col++) {
+                if (gameBoard[row][col] == 255) {
+                    gameBoard[row][col] = 0;
+                }
+            }
+        }
+
+        rowsToClear.clear();
+    } while (rowsCleared);
 }
 
 void TetrisGame::appendTetrominoToGameBoard() {
@@ -305,5 +341,19 @@ void TetrisGame::displayGrid()
             }
         }
         std::cout << std::endl;
+    }
+}
+
+void TetrisGame::createBorders()
+{
+    // Set border values to 255
+    for (int row = 0; row < boardHeight; row++) {
+        gameBoard[row][0] = 255;
+        gameBoard[row][boardWidth - 1] = 255;
+    }
+
+    for (int col = 0; col < boardWidth; col++) {
+        gameBoard[0][col] = 255;
+        gameBoard[boardHeight - 1][col] = 255;
     }
 }
