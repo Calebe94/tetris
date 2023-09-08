@@ -56,8 +56,18 @@ void TetrisUI::Render() {
         ImGui::SetWindowSize(ImVec2(windowWidth, windowHeight));
         ImGui::SetWindowPos(ImVec2(0, 0));
 
-        int buttonX = (windowWidth - buttonWidth) / 2;
-        int buttonY = (windowHeight - buttonHeight) / 2;
+        // Calculate button position for horizontal centering
+        float buttonX = (windowWidth - buttonWidth) / 2;
+        float buttonY = (windowHeight - buttonHeight) / 2;
+
+        // Render title centered at the top
+        float titleWidth = ImGui::CalcTextSize("Menu").x;
+        float titleX = (windowWidth - titleWidth) / 2;
+        float titleY = buttonY - 20; // Adjust for spacing
+        ImGui::SetCursorPos(ImVec2(titleX, titleY));
+        ImGui::Text("Menu");
+
+        // Set the cursor position for buttons
         ImGui::SetCursorPos(ImVec2(buttonX, buttonY));
 
         // ImGui menu items (buttons)
@@ -78,6 +88,9 @@ void TetrisUI::Render() {
 
         // Other ImGui menu items (e.g., settings)
 
+        // Set the cursor position for the title
+        ImGui::SetCursorPos(ImVec2(titleX, titleY));
+
         ImGui::End();
 
         // Render ImGui
@@ -90,7 +103,6 @@ void TetrisUI::Render() {
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     }
 }
-
 
 // Toggle the menu on/off
 void TetrisUI::ToggleMenu() {
