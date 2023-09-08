@@ -4,6 +4,7 @@
 #include <vector>
 #include "ui.h"
 #include "game.h"
+#include "imgui_impl_sdl2.h"
 
 TetrisGame::TetrisGame() : currentTetromino((shape_t)(rand() % 7)), tetrisUI(nullptr, nullptr)
 {
@@ -61,8 +62,10 @@ void TetrisGame::handleEvents()
 {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
+        ImGui_ImplSDL2_ProcessEvent(&event);
         if (event.type == SDL_QUIT)
         {
+            tetrisUI.setQuit(true);
             this->quit = true;
         }
         else if (event.type == SDL_KEYDOWN)
@@ -71,7 +74,8 @@ void TetrisGame::handleEvents()
             {
                 case SDLK_LEFT:
                     debug("Left key!");
-                    this->currentTetromino.moveLeft();
+                    if(!pause)
+                        this->currentTetromino.moveLeft();
                     if(checkBorderCollisions())
                     {
                         this->currentTetromino.moveRight();
@@ -79,7 +83,8 @@ void TetrisGame::handleEvents()
                     break;
                 case SDLK_RIGHT:
                     debug("Right key!");
-                    this->currentTetromino.moveRight();
+                    if(!pause)
+                        this->currentTetromino.moveRight();
                     if(checkBorderCollisions())
                     {
                         this->currentTetromino.moveLeft();
@@ -87,7 +92,8 @@ void TetrisGame::handleEvents()
                     break;
                 case SDLK_DOWN:
                     debug("Down key!");
-                    this->currentTetromino.moveDown();
+                    if(!pause)
+                        this->currentTetromino.moveDown();
                     if(checkBorderCollisions())
                     {
                         this->currentTetromino.moveUp();
@@ -95,12 +101,15 @@ void TetrisGame::handleEvents()
                     break;
                 case SDLK_UP:
                     debug("UP key!");
-                    this->currentTetromino.rotateClockwise();
+                    if(!pause)
+                        this->currentTetromino.rotateClockwise();
                     debug("Tetromino vertical size: %d", this->currentTetromino.getVerticalSize());
                     debug("Tetromino horizontal size: %d", this->currentTetromino.getHorizontalSize());
                     break;
 
                 case SDLK_ESCAPE:
+                    pause = !pause;
+                    info("Game status: %s", pause?"Paused":"Resumed");
                     tetrisUI.ToggleMenu();
                     break;
 
@@ -114,7 +123,8 @@ void TetrisGame::handleEvents()
 void TetrisGame::update()
 {
     currentTetromino.tick();
-    if (SDL_GetTicks() - lastTime >= (uint32_t)(updateTetrominoTime - playerLevel.getCurrentLevel()*15)) {
+    this->quit = tetrisUI.getQuit();
+    if (SDL_GetTicks() - lastTime >= (uint32_t)(updateTetrominoTime - playerLevel.getCurrentLevel()*15) && !pause) {
         lastTime = SDL_GetTicks();
         this->currentTetromino.moveDown();
         // Check for collisions with the bottom border or other tiles
@@ -143,8 +153,6 @@ void TetrisGame::render()
 {
     this->graphics.clear();
 
-    tetrisUI.Render();
-
     Tile tile = Tile(this->graphics.getRenderer());
 
     for (int row = 0; row < this->boardHeight; row++)
@@ -170,6 +178,7 @@ void TetrisGame::render()
 
     currentTetromino.render();
 
+    tetrisUI.Render();
     this->graphics.render();
 }
 

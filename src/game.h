@@ -27,6 +27,7 @@ private:
     Uint32 lastMoveTime;
     bool gameOver;
     bool quit = false;
+    bool pause = false;
 
     uint32_t frameStart = 0;
     int frameTime = 0;

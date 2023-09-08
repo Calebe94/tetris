@@ -41,7 +41,9 @@ bool Graphics::init() {
             error("SDL unable to create renderer! SDL Error: %s", SDL_GetError());
         }
     }
-
+    // Set render scale for high DPI displays
+    const float scale{get_scale()};
+    SDL_RenderSetScale(mRenderer, scale, scale);
     // TODO Init (create) a Frame Timer control
 
     SDL_ShowCursor(0);
@@ -90,4 +92,28 @@ Graphics::~Graphics() {
 
     TTF_Quit();
     SDL_Quit();
+}
+
+// src/core/Core/Window.cpp
+float Graphics::get_scale() const {
+  int window_width{0};
+  int window_height{0};
+  SDL_GetWindowSize(
+    mWindow,
+    &window_width, &window_height
+  );
+
+  int render_output_width{0};
+  int render_output_height{0};
+  SDL_GetRendererOutputSize(
+    mRenderer,
+    &render_output_width, &render_output_height
+  );
+
+  const auto scale_x{
+    static_cast<float>(render_output_width) /
+      static_cast<float>(window_width)
+  };
+
+  return scale_x;
 }

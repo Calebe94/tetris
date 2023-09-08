@@ -9,11 +9,13 @@ public:
     void Render();
     void ToggleMenu();
     void init();
+    bool getQuit();
+    void setQuit(bool);
 
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     bool showMenu;
-    bool quit;
+    bool quit = false;
 };
 #endif

@@ -19,13 +19,15 @@ class Graphics {
         void clear();
         void render();
 
-         int getScreenWidth();
-         int getScreenHeight();
+        int getScreenWidth();
+        int getScreenHeight();
 
-         virtual ~Graphics();
+        virtual ~Graphics();
 
-         SDL_Renderer * getRenderer();
-         SDL_Window * getWindow();
+        SDL_Renderer * getRenderer();
+        SDL_Window * getWindow();
+
+        float get_scale() const;
 
     private:
          SDL_Window *mWindow;
