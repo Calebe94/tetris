@@ -10,9 +10,18 @@ SOURCE=$(wildcard src/*.cpp)
 SDL2_FLAGS=`$$(which sdl2-config) --cflags --libs`
 INCLUDE_PATH=-Isrc/
 INCLUDE_PATH+=-Ilib/seethe/
+DEAR_IMGUI_DIR=lib/imgui/
+INCLUDE_PATH+=-I${DEAR_IMGUI_DIR}
+INCLUDE_PATH+=-I${DEAR_IMGUI_DIR}/backends/
+DEAR_IMGUI_SOURCES=$(wildcard ${DEAR_IMGUI_DIR}*.cpp)
+DEAR_IMGUI_SOURCES+=${DEAR_IMGUI_DIR}backends/imgui_impl_sdl2.cpp
+DEAR_IMGUI_SOURCES+=${DEAR_IMGUI_DIR}backends/imgui_impl_sdlrenderer2.cpp
 FLAGS=-Wall -Wextra
 # FLAGS+=-fanalyzer
-LIBS='-Wl,-rpath,$$ORIGIN' $(SDL2_FLAGS) -l SDL2_image -l SDL2_mixer -l SDL2_ttf ${INCLUDE_PATH}
+LIBS='-Wl,-rpath,$$ORIGIN' $(SDL2_FLAGS) -lSDL2_image -lSDL2_mixer -lSDL2_ttf ${INCLUDE_PATH}
+
+# Add Dear ImGui objects to SOURCE
+SOURCE+=$(DEAR_IMGUI_SOURCES)
 
 MACROS=-DLOG_LEVEL=INFO
 

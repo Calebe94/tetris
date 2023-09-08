@@ -2,9 +2,10 @@
 #include "graphics.h"
 #include "tetromino.h"
 #include <vector>
+#include "ui.h"
 #include "game.h"
 
-TetrisGame::TetrisGame() : currentTetromino((shape_t)(rand() % 7))
+TetrisGame::TetrisGame() : currentTetromino((shape_t)(rand() % 7)), tetrisUI(nullptr, nullptr)
 {
     lastTime = SDL_GetTicks();
     updateTetrominoTime = 300;
@@ -14,6 +15,8 @@ void TetrisGame::run()
 {
     initializeGame();
 
+    tetrisUI = TetrisUI(graphics.getWindow(), graphics.getRenderer());
+    tetrisUI.init();
     // TODO: I should find a way to round up numbers, because at this point the height(672) and width(476) is hard coded and 476/32 is 14.93,
     // I need it to be at least 15
     this->boardWidth = (this->graphics.getScreenWidth() / 32);
@@ -96,6 +99,11 @@ void TetrisGame::handleEvents()
                     debug("Tetromino vertical size: %d", this->currentTetromino.getVerticalSize());
                     debug("Tetromino horizontal size: %d", this->currentTetromino.getHorizontalSize());
                     break;
+
+                case SDLK_ESCAPE:
+                    tetrisUI.ToggleMenu();
+                    break;
+
                 case SDLK_SPACE:
                     break;
             }
@@ -134,6 +142,8 @@ void TetrisGame::update()
 void TetrisGame::render()
 {
     this->graphics.clear();
+
+    tetrisUI.Render();
 
     Tile tile = Tile(this->graphics.getRenderer());
 

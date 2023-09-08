@@ -67,6 +67,11 @@ SDL_Renderer* Graphics::getRenderer()
     return mRenderer;
 }
 
+SDL_Window * Graphics::getWindow()
+{
+    return mWindow;
+}
+
 int Graphics::getScreenWidth()
 {
     return SCREEN_WIDTH;

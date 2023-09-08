@@ -25,6 +25,7 @@ class Graphics {
          virtual ~Graphics();
 
          SDL_Renderer * getRenderer();
+         SDL_Window * getWindow();
 
     private:
          SDL_Window *mWindow;

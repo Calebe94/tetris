@@ -5,6 +5,7 @@
 #include "tetromino.h"
 #include "score.h"
 #include "level.h"
+#include "ui.h"
 #include <vector>
 
 #define FPS          60
@@ -18,6 +19,8 @@ public:
 private:
     Graphics graphics;
     Tetromino currentTetromino;
+    TetrisUI tetrisUI;
+
     std::vector<std::vector<int>> gameBoard;
     int boardWidth;
     int boardHeight;
