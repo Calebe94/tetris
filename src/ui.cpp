@@ -11,6 +11,8 @@ TetrisUI::TetrisUI(SDL_Window* window, SDL_Renderer* renderer)
     this->window = window;
     this->renderer = renderer;
     showMenu = false; // Set the menu to initially hidden
+    this->playerScore = 0;
+    this->playerLevel = 0;
 }
 
 void TetrisUI::init()
@@ -51,6 +53,7 @@ void TetrisUI::Render() {
     style.Colors[ImGuiCol_Button] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // Button color
     style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f); // Button hover color
     style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Button pressed color
+    style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // Text color (white)
 
     ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
     ImGui::SetWindowSize(ImVec2(windowWidth, windowHeight));
@@ -66,10 +69,7 @@ void TetrisUI::Render() {
     float titleX = (windowWidth - titleWidth) / 2;
     float titleY = buttonY - buttonHeight; // Adjust for spacing
     ImGui::SetCursorPos(ImVec2(titleX, titleY));
-    ImGui::Text("Tetris Menu");
 
-    // Set the cursor position for buttons
-    ImGui::SetCursorPos(ImVec2(buttonX, buttonY));
 
     // TODO: this ui menu could be better.
     // I was very sleepy doint it, so I could implement it in a better way
@@ -77,6 +77,10 @@ void TetrisUI::Render() {
     // ImGui menu items (buttons)
     if(GameStateManager::getInstance().getCurrentState() == GameState::PAUSED)
     {
+        ImGui::Text("Tetris Menu");
+
+        // Set the cursor position for buttons
+        ImGui::SetCursorPos(ImVec2(buttonX, buttonY));
         if (ImGui::Button("Continue", ImVec2(buttonWidth, buttonHeight)))
         {
             info("Continue");
@@ -96,8 +100,12 @@ void TetrisUI::Render() {
             GameStateManager::getInstance().transitionTo(GameState::EXIT);
         }
     }
-    else
+    else if (GameStateManager::getInstance().getCurrentState() == GameState::MENU)
     {
+        ImGui::Text("Tetris Menu");
+
+        // Set the cursor position for buttons
+        ImGui::SetCursorPos(ImVec2(buttonX, buttonY));
         if (ImGui::Button("New Game", ImVec2(buttonWidth, buttonHeight)))
         {
             // Handle new game button press
@@ -119,7 +127,14 @@ void TetrisUI::Render() {
             GameStateManager::getInstance().transitionTo(GameState::EXIT);
         }
     }
-
+    else if(GameStateManager::getInstance().getCurrentState() == GameState::GAME)
+    {
+        // Display the player's score
+        float scoreX = (windowWidth - titleWidth) / 2; // Centered horizontally
+        float scoreY = buttonY + buttonHeight ; // Below the buttons with padding
+        ImGui::SetCursorPos(ImVec2(scoreX, scoreY));
+        // ImGui::Text("Score: %d", playerScore); // Assuming playerScore is an integer representing the score
+    }
 
     // Other ImGui menu items (e.g., settings)
 
@@ -152,4 +167,69 @@ bool TetrisUI::getQuit()
 void TetrisUI::setQuit(bool quit)
 {
     this->quit = quit;
+}
+
+void TetrisUI::renderPlayerScore()
+{
+    ImGui_ImplSDLRenderer2_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowRounding = 0.0f;
+    style.FrameRounding = 0.0f;
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Background color
+    style.Colors[ImGuiCol_Button] = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // Button color
+    style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.3f, 0.3f, 0.3f, 1.0f); // Button hover color
+    style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Button pressed color
+    style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f); // Text color (white)
+
+    ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+    ImGui::SetWindowSize(ImVec2(windowWidth, windowHeight));
+    ImGui::SetWindowPos(ImVec2(0, 0));
+
+    // Calculate position for score and level
+    float scoreX = windowWidth * 0.77;
+
+    // Display the score string
+    ImGui::SetCursorPos(ImVec2(scoreX, windowHeight*0.08));
+    ImGui::Text("Score"); // Assuming playerScore is an integer representing the score
+
+    // Display the player's score
+    ImGui::SetCursorPos(ImVec2(scoreX, windowHeight*0.13));
+    ImGui::Text("%d", this->playerScore); // Assuming currentLevel is an integer representing the level
+
+    // Display the level string
+    ImGui::SetCursorPos(ImVec2(scoreX, windowHeight*0.31));
+    ImGui::Text("Level"); // Assuming playerScore is an integer representing the score
+
+    // Display the current level
+    ImGui::SetCursorPos(ImVec2(scoreX, windowHeight*0.36));
+    ImGui::Text("%d", this->playerLevel); // Assuming currentLevel is an integer representing the level
+
+    // Display "next" tetromino string
+    ImGui::SetCursorPos(ImVec2(scoreX, windowHeight*0.53));
+    ImGui::Text("Next"); // Assuming playerScore is an integer representing the score
+
+    ImGui::End();
+    // Render ImGui
+    ImGui::Render();
+
+    ImGuiIO& io = ImGui::GetIO();
+    SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+    SDL_RenderClear(renderer);
+
+    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+}
+
+void TetrisUI::setPlayerScore(int score)
+{
+    this->playerScore = score;
+}
+
+void TetrisUI::setPlayerLevel(int level)
+{
+    this->playerLevel = level;
 }

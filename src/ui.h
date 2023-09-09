@@ -11,11 +11,16 @@ public:
     void init();
     bool getQuit();
     void setQuit(bool);
+    void renderPlayerScore();
+    void setPlayerScore(int score);
+    void setPlayerLevel(int level);
 
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     bool showMenu;
     bool quit = false;
+    int playerScore;
+    int playerLevel;
 };
 #endif

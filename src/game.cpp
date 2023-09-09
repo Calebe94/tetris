@@ -156,6 +156,7 @@ void TetrisGame::render()
 
     if (GameStateManager::getInstance().getCurrentState() == GameState::GAME)
     {
+        tetrisUI.renderPlayerScore();
         renderGame();
     }
 
@@ -328,6 +329,18 @@ void TetrisGame::createBorders()
         gameBoard[boardHeight - 1][col] = 255;
     }
 
+    // Creating borders for the score UI
+    for (int row = boardWidth; row < totalBoardWidth; row++)
+    {
+        gameBoard[5][row] = 255;
+    }
+
+    // Creating borders for the player level UI
+    for (int row = boardWidth; row < totalBoardWidth; row++)
+    {
+        gameBoard[10][row] = 255;
+    }
+
     // for (int col = 0; col < this->totalBoardWidth; col++) {
     //     gameBoard[0][col] = 255;
     //     gameBoard[totalBoardWidth-1][col] = 255;
@@ -338,10 +351,12 @@ void TetrisGame::increaseScore(int points) {
     playerScore.addPoints(points);
 
     info("Score: %d", playerScore.getScore());
+    tetrisUI.setPlayerScore(playerScore.getScore());
     // Check if the player should level up based on your criteria
     if (playerScore.getScore() >= (playerLevel.getCurrentLevel()*1000))
     {
         levelUp();
+        tetrisUI.setPlayerLevel(playerLevel.getCurrentLevel());
     }
 }
 
@@ -455,7 +470,7 @@ void TetrisGame::renderNextTetromino()
 {
     Tile tile = Tile(this->graphics.getRenderer());
     nextTetromino.setX(this->boardWidth*32 + 32);
-    nextTetromino.setY(32 * 4);
+    nextTetromino.setY(32 * 15);
     nextTetromino.setTile(tile);
     nextTetromino.applyColors();
     nextTetromino.render();
