@@ -50,6 +50,8 @@ public:
     bool isEmpty() const;
     void print();
 
+    shape_t getShapeType() const;
+
 private:
     void setColorByShape(shape_t shape);
     std::vector<std::vector<int>> shape;
@@ -58,5 +60,6 @@ private:
     int x, y;
     Tile tile;
     uint32_t lastTime;
+    shape_t shapeType;
 };
 #endif

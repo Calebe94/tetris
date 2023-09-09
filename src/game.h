@@ -19,6 +19,7 @@ public:
 private:
     Graphics graphics;
     Tetromino currentTetromino;
+    Tetromino nextTetromino;
     TetrisUI tetrisUI;
 
     std::vector<std::vector<int>> gameBoard;
@@ -55,6 +56,7 @@ private:
     void renderGame();
 
     void displayGrid();
+    void renderNextTetromino();
 
     void increaseScore(int points);
     void levelUp();

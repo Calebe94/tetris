@@ -7,7 +7,10 @@
 #include "gamestate.h"
 #include "imgui_impl_sdl2.h"
 
-TetrisGame::TetrisGame() : currentTetromino((shape_t)(rand() % 7)), tetrisUI(nullptr, nullptr)
+TetrisGame::TetrisGame() :
+    currentTetromino((shape_t)(rand() % 7)),
+    nextTetromino((shape_t)(rand() % 7)),
+    tetrisUI(nullptr, nullptr)
 {
     lastTime = SDL_GetTicks();
     updateTetrominoTime = 300;
@@ -22,7 +25,7 @@ void TetrisGame::run()
     // TODO: I should find a way to round up numbers, because at this point the height(672) and width(476) is hard coded and 476/32 is 14.93,
     // I need it to be at least 15
     this->totalBoardWidth = (this->graphics.getScreenWidth() / 32);
-    this->boardWidth = (this->totalBoardWidth)*0.8;
+    this->boardWidth = (this->totalBoardWidth)*0.75;
     this->boardHeight = this->graphics.getScreenHeight() / 32;
     info("The board width is 80%% of the total width, which is: %d", this->boardWidth);
 
@@ -190,14 +193,20 @@ void TetrisGame::placeTetromino()
 {
     debug("Placing a tetromino...");
     // Create a new random Tetromino
-    currentTetromino = Tetromino((shape_t)(rand() % 7));
-    if(!currentTetromino.isEmpty())
+
+    currentTetromino = nextTetromino;
+    nextTetromino = Tetromino((shape_t)(rand() % 7));
+    if(!nextTetromino.isEmpty() || !currentTetromino.isEmpty())
     {
         debug("Empty Tetromino");
         // Alternative technical solution
         placeTetromino();
     }
 
+    if (nextTetromino.getShapeType() == I_SHAPE)
+    {
+        nextTetromino.rotateClockwise();
+    }
     currentTetromino.print();
 
     debug("Placing tetromino at the center top of the screen...");
@@ -411,6 +420,8 @@ void TetrisGame::renderGame()
     currentTetromino.applyColors();
 
     currentTetromino.render();
+
+    renderNextTetromino();
 }
 
 void TetrisGame::tickGame()
@@ -438,4 +449,14 @@ void TetrisGame::tickGame()
             placeTetromino();
         }
     }
+}
+
+void TetrisGame::renderNextTetromino()
+{
+    Tile tile = Tile(this->graphics.getRenderer());
+    nextTetromino.setX(this->boardWidth*32 + 32);
+    nextTetromino.setY(32 * 4);
+    nextTetromino.setTile(tile);
+    nextTetromino.applyColors();
+    nextTetromino.render();
 }

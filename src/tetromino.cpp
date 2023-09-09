@@ -63,6 +63,8 @@ Tetromino::Tetromino(shape_t shapeType) : tile(NULL){
     this->x = 0;
     this->y = 0;
 
+    this->shapeType = shapeType;
+
     this->setColorByShape(shapeType);
     lastTime = SDL_GetTicks();
 }
@@ -266,4 +268,9 @@ void Tetromino::print()
         std::cout << '\n';
     }
     #endif
+}
+
+shape_t Tetromino::getShapeType() const
+{
+    return this->shapeType;
 }
