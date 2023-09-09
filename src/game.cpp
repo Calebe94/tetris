@@ -4,6 +4,7 @@
 #include <vector>
 #include "ui.h"
 #include "game.h"
+#include "gamestate.h"
 #include "imgui_impl_sdl2.h"
 
 TetrisGame::TetrisGame() : currentTetromino((shape_t)(rand() % 7)), tetrisUI(nullptr, nullptr)
@@ -30,6 +31,7 @@ void TetrisGame::run()
     debug("Board dimensions: %ld %ld", gameBoard.size(), gameBoard[0].size());
 
     createBorders();
+    GameStateManager::getInstance().transitionTo(GameState::MENU);
 
     info("Game initialized!");
 
@@ -74,7 +76,7 @@ void TetrisGame::handleEvents()
             {
                 case SDLK_LEFT:
                     debug("Left key!");
-                    if(!pause)
+                    if(GameStateManager::getInstance().getCurrentState() == GameState::GAME)
                         this->currentTetromino.moveLeft();
                     if(checkBorderCollisions())
                     {
@@ -83,7 +85,7 @@ void TetrisGame::handleEvents()
                     break;
                 case SDLK_RIGHT:
                     debug("Right key!");
-                    if(!pause)
+                    if(GameStateManager::getInstance().getCurrentState() == GameState::GAME)
                         this->currentTetromino.moveRight();
                     if(checkBorderCollisions())
                     {
@@ -92,7 +94,7 @@ void TetrisGame::handleEvents()
                     break;
                 case SDLK_DOWN:
                     debug("Down key!");
-                    if(!pause)
+                    if(GameStateManager::getInstance().getCurrentState() == GameState::GAME)
                         this->currentTetromino.moveDown();
                     if(checkBorderCollisions())
                     {
@@ -101,7 +103,7 @@ void TetrisGame::handleEvents()
                     break;
                 case SDLK_UP:
                     debug("UP key!");
-                    if(!pause)
+                    if(GameStateManager::getInstance().getCurrentState() == GameState::GAME)
                         this->currentTetromino.rotateClockwise();
                     debug("Tetromino vertical size: %d", this->currentTetromino.getVerticalSize());
                     debug("Tetromino horizontal size: %d", this->currentTetromino.getHorizontalSize());
@@ -109,6 +111,10 @@ void TetrisGame::handleEvents()
 
                 case SDLK_ESCAPE:
                     pause = !pause;
+                    if(GameStateManager::getInstance().getCurrentState() == GameState::GAME)
+                        GameStateManager::getInstance().transitionTo(GameState::PAUSED);
+                    else if(GameStateManager::getInstance().getCurrentState() == GameState::PAUSED)
+                        GameStateManager::getInstance().transitionTo(GameState::GAME);
                     info("Game status: %s", pause?"Paused":"Resumed");
                     tetrisUI.ToggleMenu();
                     break;
@@ -123,29 +129,14 @@ void TetrisGame::handleEvents()
 void TetrisGame::update()
 {
     currentTetromino.tick();
-    this->quit = tetrisUI.getQuit();
-    if (SDL_GetTicks() - lastTime >= (uint32_t)(updateTetrominoTime - playerLevel.getCurrentLevel()*15) && !pause) {
-        lastTime = SDL_GetTicks();
-        this->currentTetromino.moveDown();
-        // Check for collisions with the bottom border or other tiles
-        if (checkBorderCollisions()) {
-            // Revert the move if a collision occurs
-            currentTetromino.moveUp();
 
-            // Append the shape of the Tetromino to the gameBoard
-            appendTetrominoToGameBoard();
-
-            // Check for and clear completed rows (not shown in this code)
-            clearRows();
-
-            createBorders();
-
-            // Display the gameBoard
-            displayGrid();
-
-            // Place another tetromino
-            placeTetromino();
-        }
+    if (GameStateManager::getInstance().getCurrentState() == GameState::GAME)
+    {
+        tickGame();
+    }
+    if(GameStateManager::getInstance().getCurrentState() == GameState::EXIT)
+    {
+        this->quit = true;
     }
 }
 
@@ -153,32 +144,16 @@ void TetrisGame::render()
 {
     this->graphics.clear();
 
-    Tile tile = Tile(this->graphics.getRenderer());
-
-    for (int row = 0; row < this->boardHeight; row++)
+    if (GameStateManager::getInstance().getCurrentState() == GameState::MENU || GameStateManager::getInstance().getCurrentState() == GameState::PAUSED)
     {
-        for (int col = 0; col < this->boardWidth; col++)
-        {
-            if(gameBoard[row][col] == 255)
-            {
-                tile.setColors(BASE_COLORS[0], LIGHT_COLORS[0], DARK_COLORS[0]);
-                tile.drawCell(0, 0, col*32, row*32);
-            }
-            else if(gameBoard[row][col] == 0); // Do nothing, for now
-            else
-            {
-                tile.setColors(BASE_COLORS[gameBoard[row][col]], LIGHT_COLORS[gameBoard[row][col]], DARK_COLORS[gameBoard[row][col]]);
-                tile.drawCell(0, 0, col*32, row*32);
-            }
-        }
+        tetrisUI.Render();
     }
 
-    currentTetromino.setTile(tile);
-    currentTetromino.applyColors();
+    if (GameStateManager::getInstance().getCurrentState() == GameState::GAME)
+    {
+        renderGame();
+    }
 
-    currentTetromino.render();
-
-    tetrisUI.Render();
     this->graphics.render();
 }
 
@@ -362,4 +337,97 @@ void TetrisGame::levelUp() {
 
     // You can print a message or perform any actions specific to leveling up here
     info("Level Up! You are now at Level %d", playerLevel.getCurrentLevel());
+}
+
+void TetrisGame::checkState()
+{
+    switch (GameStateManager::getInstance().getCurrentState()) {
+        case GameState::MENU:
+            // Handle MENU state logic
+            std::cout << "In MENU state" << std::endl;
+            // Check for transitions to other states (e.g., NEW_GAME)
+            tetrisUI.Render();
+            break;
+
+        case GameState::GAME:
+            // Handle GAME state logic
+            std::cout << "In GAME state" << std::endl;
+            // Check for transitions to other states (e.g., PAUSED)
+            // tickGame();
+            // renderGame();
+            break;
+
+        case GameState::PAUSED:
+            // Handle PAUSED state logic
+            std::cout << "In PAUSED state" << std::endl;
+            // Check for transitions to other states (e.g., MENU or GAME)
+            tetrisUI.Render();
+            break;
+
+        case GameState::SETTINGS:
+            // Handle SETTINGS state logic
+            std::cout << "In SETTINGS state" << std::endl;
+            // Check for transitions to other states (e.g., MENU)
+            break;
+
+        // Add more cases for other states as needed
+
+        default:
+            break;
+    }
+}
+
+void TetrisGame::renderGame()
+{
+    Tile tile = Tile(this->graphics.getRenderer());
+
+    for (int row = 0; row < this->boardHeight; row++)
+    {
+        for (int col = 0; col < this->boardWidth; col++)
+        {
+            if(gameBoard[row][col] == 255)
+            {
+                tile.setColors(BASE_COLORS[0], LIGHT_COLORS[0], DARK_COLORS[0]);
+                tile.drawCell(0, 0, col*32, row*32);
+            }
+            else if(gameBoard[row][col] == 0); // Do nothing, for now
+            else
+            {
+                tile.setColors(BASE_COLORS[gameBoard[row][col]], LIGHT_COLORS[gameBoard[row][col]], DARK_COLORS[gameBoard[row][col]]);
+                tile.drawCell(0, 0, col*32, row*32);
+            }
+        }
+    }
+
+    currentTetromino.setTile(tile);
+    currentTetromino.applyColors();
+
+    currentTetromino.render();
+}
+
+void TetrisGame::tickGame()
+{
+    if (SDL_GetTicks() - lastTime >= (uint32_t)(updateTetrominoTime - playerLevel.getCurrentLevel()*15)) {
+        lastTime = SDL_GetTicks();
+        this->currentTetromino.moveDown();
+        // Check for collisions with the bottom border or other tiles
+        if (checkBorderCollisions()) {
+            // Revert the move if a collision occurs
+            currentTetromino.moveUp();
+
+            // Append the shape of the Tetromino to the gameBoard
+            appendTetrominoToGameBoard();
+
+            // Check for and clear completed rows (not shown in this code)
+            clearRows();
+
+            createBorders();
+
+            // Display the gameBoard
+            displayGrid();
+
+            // Place another tetromino
+            placeTetromino();
+        }
+    }
 }

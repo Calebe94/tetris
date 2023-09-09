@@ -48,6 +48,11 @@ private:
     void appendTetrominoToGameBoard();
     void createBorders();
 
+    void checkState();
+
+    void tickGame();
+    void renderGame();
+
     void displayGrid();
 
     void increaseScore(int points);
