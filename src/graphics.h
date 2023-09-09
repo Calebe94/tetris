@@ -9,7 +9,7 @@ using namespace std;
 
 class Graphics {
     public:
-        const static int SCREEN_WIDTH = 480;
+        const static int SCREEN_WIDTH = 672;
         const static int SCREEN_HEIGHT = 672;
         const static int TICKS_PER_FRAME_LIMIT = 16;
 

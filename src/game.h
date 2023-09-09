@@ -23,6 +23,7 @@ private:
 
     std::vector<std::vector<int>> gameBoard;
     int boardWidth;
+    int totalBoardWidth;
     int boardHeight;
     Uint32 lastMoveTime;
     bool gameOver;

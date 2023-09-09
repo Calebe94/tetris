@@ -21,13 +21,15 @@ void TetrisGame::run()
     tetrisUI.init();
     // TODO: I should find a way to round up numbers, because at this point the height(672) and width(476) is hard coded and 476/32 is 14.93,
     // I need it to be at least 15
-    this->boardWidth = (this->graphics.getScreenWidth() / 32);
+    this->totalBoardWidth = (this->graphics.getScreenWidth() / 32);
+    this->boardWidth = (this->totalBoardWidth)*0.8;
     this->boardHeight = this->graphics.getScreenHeight() / 32;
+    info("The board width is 80%% of the total width, which is: %d", this->boardWidth);
 
     debug("Board width: %d", boardWidth);
     debug("Board height: %d", boardHeight);
 
-    gameBoard.resize(boardHeight, std::vector<int>(boardWidth, 0));
+    gameBoard.resize(boardHeight, std::vector<int>(totalBoardWidth, 0));
     debug("Board dimensions: %ld %ld", gameBoard.size(), gameBoard[0].size());
 
     createBorders();
@@ -309,12 +311,18 @@ void TetrisGame::createBorders()
     for (int row = 0; row < boardHeight; row++) {
         gameBoard[row][0] = 255;
         gameBoard[row][boardWidth - 1] = 255;
+        gameBoard[row][totalBoardWidth - 1] = 255;
     }
 
-    for (int col = 0; col < boardWidth; col++) {
+    for (int col = 0; col < totalBoardWidth; col++) {
         gameBoard[0][col] = 255;
         gameBoard[boardHeight - 1][col] = 255;
     }
+
+    // for (int col = 0; col < this->totalBoardWidth; col++) {
+    //     gameBoard[0][col] = 255;
+    //     gameBoard[totalBoardWidth-1][col] = 255;
+    // }
 }
 
 void TetrisGame::increaseScore(int points) {
@@ -383,7 +391,7 @@ void TetrisGame::renderGame()
 
     for (int row = 0; row < this->boardHeight; row++)
     {
-        for (int col = 0; col < this->boardWidth; col++)
+        for (int col = 0; col < this->totalBoardWidth; col++)
         {
             if(gameBoard[row][col] == 255)
             {

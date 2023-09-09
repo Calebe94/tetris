@@ -86,6 +86,7 @@ void TetrisUI::Render() {
         if (ImGui::Button("Settings", ImVec2(buttonWidth, buttonHeight)))
         {
             info("Settings");
+            GameStateManager::getInstance().transitionTo(GameState::SETTINGS);
         }
         ImGui::SetCursorPos(ImVec2(buttonX, (buttonY+buttonHeight*2)+10));
         if (ImGui::Button("Exit", ImVec2(buttonWidth, buttonHeight)))
@@ -107,6 +108,7 @@ void TetrisUI::Render() {
         if (ImGui::Button("Settings", ImVec2(buttonWidth, buttonHeight)))
         {
             // Handle settings button press
+            GameStateManager::getInstance().transitionTo(GameState::SETTINGS);
             info("Settings");
         }
         ImGui::SetCursorPos(ImVec2(buttonX, (buttonY+buttonHeight*2)+10));
