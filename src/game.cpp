@@ -1,4 +1,4 @@
-#include <SDL2/SDL_mixer.h>
+
 #include "seethe.h"
 #include "graphics.h"
 #include "tetromino.h"
@@ -7,6 +7,12 @@
 #include "game.h"
 #include "gamestate.h"
 #include "imgui_impl_sdl2.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <SDL_mixer.h>
+#else
+#include "SDL2/SDL_mixer.h"
+#endif
 
 TetrisGame::TetrisGame() :
     currentTetromino((shape_t)(rand() % 7)),
@@ -15,6 +21,31 @@ TetrisGame::TetrisGame() :
 {
     lastTime = SDL_GetTicks();
     updateTetrominoTime = 300;
+}
+
+void TetrisGame::loop()
+{
+    if(!this->quit)
+    {
+        this->frameStart = SDL_GetTicks(); // Get the current time
+
+        this->handleEvents();
+        this->update();
+        this->render();
+
+        this->frameTime = SDL_GetTicks() - this->frameStart; // Calculate frame time
+
+        // Limit frame rate
+        if (this->frameTime < FRAME_DELAY)
+        {
+            SDL_Delay(FRAME_DELAY - this->frameTime);
+        }
+    }
+}
+
+bool TetrisGame::isRunning()
+{
+    return this->quit;
 }
 
 void TetrisGame::run()
@@ -41,22 +72,9 @@ void TetrisGame::run()
 
     info("Game initialized!");
 
-    while(!this->quit)
-    {
-        this->frameStart = SDL_GetTicks(); // Get the current time
-
-        this->handleEvents();
-        this->update();
-        this->render();
-
-        this->frameTime = SDL_GetTicks() - this->frameStart; // Calculate frame time
-
-        // Limit frame rate
-        if (this->frameTime < FRAME_DELAY)
-        {
-            SDL_Delay(FRAME_DELAY - this->frameTime);
-        }
-    }
+    clearBoard();
+    createBorders();
+    placeTetromino();
 }
 
 void TetrisGame::initializeGame()
@@ -86,7 +104,7 @@ void TetrisGame::initializeGame()
 
     // Set initial volume (0 to 128, where 128 is max volume)
     Mix_Volume(-1, MIX_MAX_VOLUME / 2);  // Adjust the volume level as needed
-    placeTetromino();
+    // placeTetromino();
 }
 
 void TetrisGame::handleEvents()
@@ -509,7 +527,9 @@ void TetrisGame::tickGame()
         GameStateManager::getInstance().transitionTo(GameState::GAME_OVER);
         info("Game over");
         // Play the Game Over sound
+        #ifndef __EMSCRIPTEN__
         Mix_PlayChannel(-1, gameoverSound, 0);  // 0 for playing once
+        #endif
         restartGame();
         // return;
     }
@@ -547,7 +567,7 @@ bool TetrisGame::checkGameOver()
     return false; // Not game over
 }
 
-void TetrisGame::restartGame()
+void TetrisGame::clearBoard()
 {
    for (int row = 0; row < this->boardHeight; row++)
     {
@@ -556,6 +576,11 @@ void TetrisGame::restartGame()
             gameBoard[row][col] = 0;
         }
     }
+}
+
+void TetrisGame::restartGame()
+{
+    clearBoard();
     createBorders();
     displayGrid();
     playerLevel.reset();

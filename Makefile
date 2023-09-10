@@ -20,13 +20,20 @@ FLAGS=-Wall -Wextra
 # FLAGS+=-fanalyzer
 LIBS='-Wl,-rpath,$$ORIGIN' $(SDL2_FLAGS) -lSDL2_image -lSDL2_mixer -lSDL2_ttf ${INCLUDE_PATH}
 
+# Emscripten configuration
+EMCC = emcc
+EMFLAGS = -std=c++11
+EMINCLUDE_PATH = -Isrc/ -Ilib/seethe/ -Ilib/imgui/ -Ilib/imgui/backends/
+EMLIBS = -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_MIXER=2 -s USE_SDL_TTF=2 -sALLOW_MEMORY_GROWTH --preload-file assets/
+
 # Add Dear ImGui objects to SOURCE
 SOURCE+=$(DEAR_IMGUI_SOURCES)
 
 MACROS=-DLOG_LEVEL=INFO
 
 OUTPUT_DIR=bin/
-BIN=bin/${TITLE}
+BIN=$(OUTPUT_DIR)${TITLE}
+BIN_HTML = $(OUTPUT_DIR)$(TITLE).html
 
 ${OUTPUT_DIR}:
 	@mkdir -p ${OUTPUT_DIR}
@@ -38,6 +45,9 @@ run: compile
 	$(BIN)
 
 all: compile
+
+web: $(OUTPUT_DIR)
+	$(EMCC) $(EMFLAGS) $(SOURCE) $(EMINCLUDE_PATH) $(EMLIBS) $(MACROS) -o $(BIN_HTML)
 
 clean:
 	rm -fr ${OUTPUT_DIR}

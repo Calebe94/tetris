@@ -1,4 +1,10 @@
-#include "SDL2/SDL.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
+
 #include "tile.h"
 
 Tile::Tile(SDL_Renderer *renderer)

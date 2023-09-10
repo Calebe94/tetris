@@ -18,6 +18,8 @@ public:
     TetrisGame();
     void run();
     virtual ~TetrisGame();
+    void loop();
+    bool isRunning();
 
 private:
     Graphics graphics;
@@ -54,6 +56,7 @@ private:
     bool checkBorderCollisions();
     void appendTetrominoToGameBoard();
     void createBorders();
+    void clearBoard();
 
     void checkState();
 

@@ -3,6 +3,20 @@
 #include "seethe.h"
 #include "game.h"
 
+TetrisGame tetris = TetrisGame();
+
+void loop()
+{
+    #ifndef __EMSCRIPTEN__
+    while(!tetris.isRunning())
+    {
+        tetris.loop();
+    }
+    #else
+    tetris.loop();
+    #endif
+}
+
 int main(int argc, char *argv[])
 {
     info("Initializing Tetris!");
@@ -18,8 +32,12 @@ int main(int argc, char *argv[])
     }
 
     srand (time(NULL));
-    TetrisGame tetris = TetrisGame();
-    tetris.run();
 
+    tetris.run();
+#ifdef __EMSCRIPTEN__
+    emscripten_set_main_loop(&loop, 0, 1);
+#else
+    loop();
+#endif
     return 0;
 }

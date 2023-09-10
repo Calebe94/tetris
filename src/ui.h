@@ -1,6 +1,11 @@
 #ifndef _UI_H_
 #define  _UI_H_
-#include "SDL2/SDL.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <SDL.h>
+#else
+#include <SDL2/SDL.h>
+#endif
 #include "imgui.h"
 
 class TetrisUI {

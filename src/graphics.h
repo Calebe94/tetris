@@ -1,8 +1,13 @@
 #ifndef _GRAPHICS_H_
 #define _GRAPHICS_H_
-
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
+#else
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#endif
 #include <string>
 
 using namespace std;

@@ -4,8 +4,15 @@
 #include "imgui_impl_sdlrenderer2.h"
 #include "ui.h"
 #include "gamestate.h"
-#include "SDL2/SDL.h"
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include <SDL.h>
+#include <SDL_mixer.h>
+#else
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#endif
 
 TetrisUI::TetrisUI(SDL_Window* window, SDL_Renderer* renderer)
 {
