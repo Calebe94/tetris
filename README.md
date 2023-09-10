@@ -13,7 +13,6 @@ The main objective of this project is to provide a fun and interactive way to pl
 - Scoring system: earn points by clearing lines and completing levels.
 - Display of the next tetromino that will appear.
 - Simple and clean user interface.
-- Sound effects for movement, rotation, line clearing, and game over.
 
 ## Requirements
 
@@ -33,7 +32,7 @@ make all
 2. **Run the Game:**
 
 ```sh
-./tetris
+./bin/tetris
 ```
 
 3. **Controls:**
