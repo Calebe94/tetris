@@ -1,3 +1,4 @@
+#include <SDL2/SDL_mixer.h>
 #include "seethe.h"
 #include "graphics.h"
 #include "tetromino.h"
@@ -62,6 +63,29 @@ void TetrisGame::initializeGame()
 {
     debug("Initializing SDL2 graphics...");
     this->quit = !this->graphics.init();
+
+    // Initialize SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        error("Failed to initialize SDL_mixer");
+        return;
+    }
+    this->sound = Mix_LoadWAV("assets/sounds/tetris.ogg");
+    if (!sound) {
+        // Handle loading error
+        error("Audio file not found!");
+    }
+
+    // Load the Game Over sound
+    gameoverSound = Mix_LoadWAV("assets/sounds/game-over.ogg");
+    if (!gameoverSound) {
+        // Handle loading error
+        error("Game Over sound file not found!");
+    }
+    // Set the sound to loop infinitely (-1) and play it
+    Mix_PlayChannel(-1, sound, -1);  // -1 for looping
+
+    // Set initial volume (0 to 128, where 128 is max volume)
+    Mix_Volume(-1, MIX_MAX_VOLUME / 2);  // Adjust the volume level as needed
     placeTetromino();
 }
 
@@ -470,10 +494,13 @@ void TetrisGame::tickGame()
     tetrisUI.setPlayerScore(playerScore.getScore());
     tetrisUI.setPlayerLevel(playerLevel.getCurrentLevel());
     if (checkGameOver()) {
+        Mix_HaltChannel(-1);  // Halt all channels (-1)
         // Game over logic
         // For example, transition to the game over state or display a game over message
         GameStateManager::getInstance().transitionTo(GameState::GAME_OVER);
         info("Game over");
+        // Play the Game Over sound
+        Mix_PlayChannel(-1, gameoverSound, 0);  // 0 for playing once
         restartGame();
         // return;
     }
@@ -513,7 +540,7 @@ bool TetrisGame::checkGameOver()
 
 void TetrisGame::restartGame()
 {
-    for (int row = 0; row < this->boardHeight; row++)
+   for (int row = 0; row < this->boardHeight; row++)
     {
         for (int col = 0; col < this->boardWidth; col++)
         {
@@ -525,4 +552,18 @@ void TetrisGame::restartGame()
     playerLevel.reset();
     playerScore.reset();
     placeTetromino();
+    // Wait for the game over sound to finish before playing the main background sound again
+    while (Mix_Playing(0)) {
+        SDL_Delay(100); // Adjust the delay time as needed
+    }
+
+    // Play the main background sound again
+    Mix_PlayChannel(-1, sound, -1);  // -1 for looping
+}
+
+TetrisGame::~TetrisGame()
+{
+    Mix_FreeChunk(sound);
+    Mix_FreeChunk(gameoverSound);
+    Mix_Quit();
 }

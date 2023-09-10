@@ -6,6 +6,8 @@
 #include "score.h"
 #include "level.h"
 #include "ui.h"
+
+#include <SDL2/SDL_mixer.h>
 #include <vector>
 
 #define FPS          60
@@ -15,6 +17,7 @@ class TetrisGame {
 public:
     TetrisGame();
     void run();
+    virtual ~TetrisGame();
 
 private:
     Graphics graphics;
@@ -38,6 +41,8 @@ private:
     Score playerScore;
     Level playerLevel;
     int updateTetrominoTime;
+    Mix_Chunk *sound;
+    Mix_Chunk *gameoverSound;
 
     void initializeGame();
     void handleEvents();
