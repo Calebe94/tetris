@@ -33,7 +33,7 @@ MACROS=-DLOG_LEVEL=INFO
 
 OUTPUT_DIR=bin/
 BIN=$(OUTPUT_DIR)${TITLE}
-BIN_HTML = $(OUTPUT_DIR)index.html
+BIN_HTML = wasm/index.html
 
 ${OUTPUT_DIR}:
 	@mkdir -p ${OUTPUT_DIR}
@@ -44,13 +44,13 @@ compile: ${OUTPUT_DIR}
 run: compile
 	$(BIN)
 
-all: compile
+all: compile web
 
 web: $(OUTPUT_DIR)
 	$(EMCC) $(EMFLAGS) $(SOURCE) --shell-file wasm/index_shell.html $(EMINCLUDE_PATH) $(EMLIBS) $(MACROS) -o $(BIN_HTML)
 
 clean:
-	rm -fr ${OUTPUT_DIR}
+	rm -fr ${OUTPUT_DIR} wasm/index.js wasm/index.html wasm/index.wasm wasm/index.data
 
-.PHONY: ${OUTPUT_DIR} compile clean
+.PHONY: ${OUTPUT_DIR} compile clean web
 # end

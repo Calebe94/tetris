@@ -31,3 +31,7 @@
 *.out
 *.app
 bin/
+wasm/index.data
+wasm/index.html
+wasm/index.js
+wasm/index.wasm
