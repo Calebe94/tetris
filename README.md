@@ -1,10 +1,10 @@
 # Tetris
 
-**_Under Development_**
-
 This project is a classic implementation of the popular game Tetris, written in C++ using the SDL2 library. Tetris is a puzzle game where players manipulate falling blocks called "tetrominos" to create complete lines on the game board. When a line is completed, it clears from the board, and the player earns points. The game ends when the stack of tetrominos reaches the top of the game board.
 
 The main objective of this project is to provide a fun and interactive way to play the timeless game of Tetris, while also serving as a practical example of using the SDL2 library for game development in C++.
+
+<img src="./assets/screenshots/game.png" width="400px">
 
 ## Features
 
