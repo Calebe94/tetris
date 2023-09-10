@@ -60,6 +60,9 @@ private:
 
     void increaseScore(int points);
     void levelUp();
+    bool checkGameOver();
+
+    void restartGame();
 };
 
 #endif

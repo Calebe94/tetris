@@ -4,6 +4,7 @@ enum class GameState {
     PAUSED,
     SETTINGS,
     // Add more states as needed
+    GAME_OVER,
     EXIT
 };
 

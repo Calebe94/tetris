@@ -133,8 +133,6 @@ void TetrisGame::handleEvents()
 
 void TetrisGame::update()
 {
-    currentTetromino.tick();
-
     if (GameStateManager::getInstance().getCurrentState() == GameState::GAME)
     {
         tickGame();
@@ -159,7 +157,10 @@ void TetrisGame::render()
         tetrisUI.renderPlayerScore();
         renderGame();
     }
-
+    if (GameStateManager::getInstance().getCurrentState() == GameState::GAME_OVER) {
+        // Render game over message or take other actions
+        tetrisUI.showGameOver();
+    }
     this->graphics.render();
 }
 
@@ -211,7 +212,7 @@ void TetrisGame::placeTetromino()
     currentTetromino.print();
 
     debug("Placing tetromino at the center top of the screen...");
-    currentTetromino.setX((graphics.getScreenWidth()/TILE_SIZE)/2 * TILE_SIZE);
+    currentTetromino.setX((this->boardWidth/2) * TILE_SIZE);
     currentTetromino.setY(TILE_SIZE);
 }
 
@@ -442,6 +443,7 @@ void TetrisGame::renderGame()
 void TetrisGame::tickGame()
 {
     if (SDL_GetTicks() - lastTime >= (uint32_t)(updateTetrominoTime - playerLevel.getCurrentLevel()*15)) {
+        currentTetromino.tick();
         lastTime = SDL_GetTicks();
         this->currentTetromino.moveDown();
         // Check for collisions with the bottom border or other tiles
@@ -464,6 +466,17 @@ void TetrisGame::tickGame()
             placeTetromino();
         }
     }
+
+    tetrisUI.setPlayerScore(playerScore.getScore());
+    tetrisUI.setPlayerLevel(playerLevel.getCurrentLevel());
+    if (checkGameOver()) {
+        // Game over logic
+        // For example, transition to the game over state or display a game over message
+        GameStateManager::getInstance().transitionTo(GameState::GAME_OVER);
+        info("Game over");
+        restartGame();
+        // return;
+    }
 }
 
 void TetrisGame::renderNextTetromino()
@@ -474,4 +487,42 @@ void TetrisGame::renderNextTetromino()
     nextTetromino.setTile(tile);
     nextTetromino.applyColors();
     nextTetromino.render();
+}
+
+bool TetrisGame::checkGameOver()
+{
+    std::vector<std::vector<int>> tetrominoShape = currentTetromino.getShape();
+    int tetrominoX = currentTetromino.getX();
+    int tetrominoY = currentTetromino.getY();
+
+    for (int i = 0; i < currentTetromino.getSize(); i++) {
+        for (int j = 0; j < currentTetromino.getSize(); ++j) {
+            if (tetrominoShape[i][j]) {
+                int gridX = (tetrominoX + j * TILE_SIZE) / TILE_SIZE;
+                int gridY = (tetrominoY + i * TILE_SIZE) / TILE_SIZE;
+
+                if (gridY >= boardHeight || gameBoard[gridY][gridX]) {
+                    return true; // Game over if the Tetromino can't be placed
+                }
+            }
+        }
+    }
+
+    return false; // Not game over
+}
+
+void TetrisGame::restartGame()
+{
+    for (int row = 0; row < this->boardHeight; row++)
+    {
+        for (int col = 0; col < this->boardWidth; col++)
+        {
+            gameBoard[row][col] = 0;
+        }
+    }
+    createBorders();
+    displayGrid();
+    playerLevel.reset();
+    playerScore.reset();
+    placeTetromino();
 }

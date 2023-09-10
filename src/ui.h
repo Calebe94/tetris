@@ -14,6 +14,7 @@ public:
     void renderPlayerScore();
     void setPlayerScore(int score);
     void setPlayerLevel(int level);
+    void showGameOver();
 
 private:
     SDL_Window* window;
