@@ -7,8 +7,17 @@ GameStateManager::GameStateManager() : currentState(GameState::MENU) {
 void GameStateManager::transitionTo(GameState nextState)
 {
     currentState = nextState;
+    if(currentState == GameState::PAUSED)
+        paused = true;
+    if(currentState == GameState::GAME)
+        paused = false;
 }
 
 GameState GameStateManager::getCurrentState() const {
     return currentState;
+}
+
+bool GameStateManager::isPaused() const
+{
+    return paused;
 }

@@ -4,6 +4,7 @@ enum class GameState {
     PAUSED,
     SETTINGS,
     // Add more states as needed
+    CREDITS,
     GAME_OVER,
     EXIT
 };
@@ -11,6 +12,7 @@ enum class GameState {
 class GameStateManager {
 private:
     GameState currentState;
+    bool paused = false;
 
 public:
     GameStateManager();
@@ -18,6 +20,7 @@ public:
     void transitionTo(GameState nextState);
 
     GameState getCurrentState() const;
+    bool isPaused() const;
 
     // Static function to access the Singleton instance
     static GameStateManager& getInstance() {

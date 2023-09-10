@@ -15,6 +15,8 @@ public:
     void setPlayerScore(int score);
     void setPlayerLevel(int level);
     void showGameOver();
+    void settingsMenuRender();
+    void displayCreditsAbout();
 
 private:
     SDL_Window* window;

@@ -185,6 +185,14 @@ void TetrisGame::render()
         // Render game over message or take other actions
         tetrisUI.showGameOver();
     }
+
+    if (GameStateManager::getInstance().getCurrentState() == GameState::SETTINGS) {
+            tetrisUI.settingsMenuRender();
+    }
+
+    if (GameStateManager::getInstance().getCurrentState() == GameState::CREDITS) {
+            tetrisUI.displayCreditsAbout();
+    }
     this->graphics.render();
 }
 
@@ -424,6 +432,7 @@ void TetrisGame::checkState()
         case GameState::SETTINGS:
             // Handle SETTINGS state logic
             std::cout << "In SETTINGS state" << std::endl;
+            tetrisUI.settingsMenuRender();
             // Check for transitions to other states (e.g., MENU)
             break;
 
