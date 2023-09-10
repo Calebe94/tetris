@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <link rel="stylesheet" href="/static/css/retro.css">
+        <link rel="stylesheet" href="/static/css/carousel.css">
+        <link rel="stylesheet" href="/static/css/fontello.css">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+
+        <!-- HTML Meta Tags -->
+        <meta name="description" content="Esta é a página pessoal e blog de Calebe94.">
+
+        <!-- Google / Search Engine Tags -->
+        <meta itemprop="name" content="calebe.dev.br">
+        <meta itemprop="description" content="Esta é a página pessoal e blog de Calebe94.">
+        <meta itemprop="image" content="https://media.calebe.dev.br/images/calebe94_1200.png">
+
+        <!-- Facebook Meta Tags -->
+        <meta property="og:url" content="https://calebe.dev.br/site">
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="calebe.dev.br">
+        <meta property="og:description" content="Esta é a página pessoal e blog de Calebe94.">
+        <meta property="og:image" content="https://media.calebe.dev.br/images/calebe94.png">
+
+        <!-- Twitter Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="calebe.dev.br">
+        <meta name="twitter:description" content="Esta é a página pessoal e blog de Calebe94.">
+        <meta name="twitter:image" content="https://media.calebe.dev.br/images/calebe94.png">
+
+        <!-- Meta Tags Generated via http://heymeta.com -->
+
+        <meta name="twitter:card" content="summary_large_image">
+
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, user-scalable=no" />
+        <link rel="stylesheet" href="/static/css/retro.css">
+        <link rel="shortcut icon" href="favicon.ico" />
+        <title>SDL2 Pong</title>
+        <style>
+            @import “/static/css/fontello”;
+            .emscripten {
+                padding-right: 0;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+            }
+            textarea.emscripten {
+                font-family: monospace;
+                width: 100%;
+                display: none;
+            }
+            div.emscripten {
+                text-align: center;
+            }
+            div.emscripten_border {
+                border: 1px solid black;
+            }
+            /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+            canvas.emscripten {
+                border: 0px none;
+                background-color: black;
+            }
+
+            .spinner {
+                height: 50px;
+                width: 50px;
+                margin: 0px auto;
+                -webkit-animation: rotation 0.8s linear infinite;
+                -moz-animation: rotation 0.8s linear infinite;
+                -o-animation: rotation 0.8s linear infinite;
+                animation: rotation 0.8s linear infinite;
+                border-left: 10px solid rgb(0, 150, 240);
+                border-right: 10px solid rgb(0, 150, 240);
+                border-bottom: 10px solid rgb(0, 150, 240);
+                border-top: 10px solid rgb(100, 0, 200);
+                border-radius: 100%;
+                background-color: rgb(200, 100, 250);
+            }
+            @-webkit-keyframes rotation {
+                from {
+                    -webkit-transform: rotate(0deg);
+                }
+                to {
+                    -webkit-transform: rotate(360deg);
+                }
+            }
+            @-moz-keyframes rotation {
+                from {
+                    -moz-transform: rotate(0deg);
+                }
+                to {
+                    -moz-transform: rotate(360deg);
+                }
+            }
+            @-o-keyframes rotation {
+                from {
+                    -o-transform: rotate(0deg);
+                }
+                to {
+                    -o-transform: rotate(360deg);
+                }
+            }
+            @keyframes rotation {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            html, body {
+                /*
+                Disable text selection so that you users will not
+                select text on buttons ... which is no fun.
+                */
+                -ms-user-select: none;
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                -webkit-touch-callout: none;
+                -khtml-user-select: none;
+                user-select: none;
+            }
+            .controller {
+                margin: 0 auto;
+                text-align: center;
+            }
+            .controls {
+                font-size: 125%;
+                min-height: 30px;
+            }
+            .canvas_wrapper {
+                display: flex;
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <figure style="overflow: visible" id="spinner">
+            <div class="spinner"></div>
+            <center style="margin-top: 0.5em">
+                <strong>emscripten</strong>
+            </center>
+        </figure>
+        <div class="emscripten">
+            <progress value="0" max="100" id="progress" hidden="1"></progress>
+        </div>
+
+        <button onclick="topFunction()" id="top-button" title="Go to top">Top</button>
+        <header class="site-header">
+
+            <nav class="nav-top">
+                <h3>
+                    <div class="whoami-animation">$ whoami</div>
+                    <a class="result-animation" href="/">&#8203</a>
+                </h3>
+                <h5><a href="/posts"a>✉️ Posts </a></h5>
+                <h5><a href="/uses.html">⚒️ Uses </a></h5>
+                <h5><a href="/recommends/">🔖   Favoritos </a></h5>
+                <!-- <h5><a href="/curriculum.html">📋    Currículo </a></h5> -->
+                <h5><a href="//links.calebe.dev.br">🔗 Links </a></h5>
+                <h5><a href="//git.calebe.dev.br">🚧 Projetos </a></h5>
+            </nav>
+        </header>
+        <main>
+        <hr>
+
+        <h2>Tetris</h2>
+        <p>
+            <p>
+            Este projeto é uma implementação clássica do popular jogo Tetris, escrito em C++ utilizando a biblioteca SDL2. Tetris é um jogo de quebra-cabeça no qual os jogadores manipulam blocos que caem chamados "tetrominós" para criar linhas completas no tabuleiro do jogo. Quando uma linha é completada, ela é removida do tabuleiro e o jogador ganha pontos. O jogo termina quando a pilha de tetrominós atinge o topo do tabuleiro.
+            </p>
+
+            <p>
+            O principal objetivo deste projeto é proporcionar uma forma divertida e interativa de jogar o atemporal jogo Tetris, ao mesmo tempo em que serve como um exemplo prático de como utilizar a biblioteca SDL2 para desenvolvimento de jogos em C++.
+            </p>
+            <center>
+                <a
+                    href="https://github.com/Calebe94/tetris"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Link para o repositório</a
+                >
+            </center>
+        </p>
+
+        <hr />
+
+        <div class="canvas_wrapper">
+            <canvas
+                class="emscripten"
+                id="canvas"
+                oncontextmenu="event.preventDefault()"
+                <!-- tabindex="-1" -->
+            ></canvas>
+
+        </div>
+
+        <div class="controller">
+            <button
+                class="controls nav-toggle"
+                style="width: 100%"
+                data-key="ArrowUp"
+                data-which="38"
+            >
+                ⇧
+            </button>
+            <button
+                class="controls nav-toggle"
+                style="width: 100%"
+                data-key=" "
+                data-which="32"
+            >
+                START/PAUSE
+            </button>
+            <button
+                class="controls nav-toggle"
+                style="width: 100%"
+                data-key="ArrowDown"
+                data-which="40"
+            >
+                ⇩
+            </button>
+        </div>
+        <textarea class="emscripten" id="output" rows="8"></textarea>
+        <div class="emscripten" id="status">Downloading...</div>
+        <hr>
+        <footer>
+        <p>
+        <center>
+        <h3>Contatos</h3>
+        <br />
+        <a style="text-decoration: none;" href="https://t.me/calebe94"><i class="icon-telegram"></i>Telegram</a>
+        <a style="text-decoration: none;" href="mailto:contato@calebe.dev.br"><i class="icon-mail"></i>Email</a>
+        <a style="text-decoration: none;" href="https://github.com/Calebe94"><i class="icon-github-circled"></i>Github</a>
+        <a style="text-decoration: none;" href="https://gitlab.com/Calebe94"><i class="icon-gitlab"></i>Gitlab</a>
+        <a style="text-decoration: none;" href="https://instagram.com/ocalebe94"><i class="icon-instagram"></i>Instagram</a>
+        </center>
+        </p>
+        </footer>
+        </main>
+        <script type="text/javascript">
+            // Get the button
+            let mybutton = document.getElementById("top-button");
+
+            // When the user scrolls down 20px from the top of the document, show the button
+            window.onscroll = function() {scrollFunction()};
+
+            function scrollFunction() {
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    mybutton.style.display = "block";
+                } else {
+                    mybutton.style.display = "none";
+                }
+            }
+
+            // When the user clicks on the button, scroll to the top of the document
+            function topFunction() {
+                document.body.scrollTop = 0;
+                document.documentElement.scrollTop = 0;
+            }
+            var statusElement = document.getElementById('status');
+            var progressElement = document.getElementById('progress');
+            var spinnerElement = document.getElementById('spinner');
+
+            var Module = {
+                preRun: [],
+                postRun: [],
+                print: (function () {
+                    var element = document.getElementById('output');
+                    if (element) element.value = ''; // clear browser cache
+                    return function (text) {
+                        if (arguments.length > 1)
+                            text = Array.prototype.slice
+                                .call(arguments)
+                                .join(' ');
+                        // These replacements are necessary if you render to raw HTML
+                        //text = text.replace(/&/g, "&amp;");
+                        //text = text.replace(/</g, "&lt;");
+                        //text = text.replace(/>/g, "&gt;");
+                        //text = text.replace('\n', '<br>', 'g');
+                        console.log(text);
+                        if (element) {
+                            element.value += text + '\n';
+                            element.scrollTop = element.scrollHeight; // focus on bottom
+                        }
+                    };
+                })(),
+                printErr: function (text) {
+                    if (arguments.length > 1)
+                        text = Array.prototype.slice.call(arguments).join(' ');
+                    console.error(text);
+                },
+                canvas: (function () {
+                    var canvas = document.getElementById('canvas');
+
+                    // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+                    // application robust, you may want to override this behavior before shipping!
+                    // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+                    canvas.addEventListener(
+                        'webglcontextlost',
+                        function (e) {
+                            alert(
+                                'WebGL context lost. You will need to reload the page.'
+                            );
+                            e.preventDefault();
+                        },
+                        false
+                    );
+
+                    return canvas;
+                })(),
+                setStatus: function (text) {
+                    if (!Module.setStatus.last)
+                        Module.setStatus.last = { time: Date.now(), text: '' };
+                    if (text === Module.setStatus.last.text) return;
+                    var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+                    var now = Date.now();
+                    if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+                    Module.setStatus.last.time = now;
+                    Module.setStatus.last.text = text;
+                    if (m) {
+                        text = m[1];
+                        progressElement.value = parseInt(m[2]) * 100;
+                        progressElement.max = parseInt(m[4]) * 100;
+                        progressElement.hidden = false;
+                        spinnerElement.hidden = false;
+                    } else {
+                        progressElement.value = null;
+                        progressElement.max = null;
+                        progressElement.hidden = true;
+                        if (!text) spinnerElement.hidden = true;
+                    }
+                    statusElement.innerHTML = text;
+                },
+                totalDependencies: 0,
+                monitorRunDependencies: function (left) {
+                    this.totalDependencies = Math.max(
+                        this.totalDependencies,
+                        left
+                    );
+                    Module.setStatus(
+                        left
+                            ? 'Preparing... (' +
+                                  (this.totalDependencies - left) +
+                                  '/' +
+                                  this.totalDependencies +
+                                  ')'
+                            : 'All downloads complete.'
+                    );
+                },
+            };
+            Module.setStatus('Downloading...');
+            window.onerror = function () {
+                Module.setStatus('Exception thrown, see JavaScript console');
+                spinnerElement.style.display = 'none';
+                Module.setStatus = function (text) {
+                    if (text)
+                        Module.printErr('[post-exception status] ' + text);
+                };
+            };
+
+            // Thanks to @juj for some hints on this issue as to how to get this working:
+            // https://github.com/emscripten-core/emscripten/issues/3614#issuecomment-142032269
+            var create_and_fire_event = function (event, type) {
+                var control_event = new Event(type, { bubbles: true });
+
+                control_event.code = event.target.dataset.key;
+                control_event.key = event.target.dataset.key;
+
+                control_event.keyCode = event.target.dataset.which;
+                control_event.which = event.target.dataset.which;
+
+                Module.canvas.dispatchEvent(control_event);
+            };
+
+            Module.postRun.push(function () {
+                Array.from(document.querySelectorAll('.controls')).forEach(
+                    function (control) {
+                        if ('ontouchstart' in document.documentElement) {
+                            // Mobile:
+                            control.addEventListener('touchstart', function (
+                                event
+                            ) {
+                                create_and_fire_event(event, 'keydown');
+                            });
+                            control.addEventListener('touchend', function (
+                                event
+                            ) {
+                                create_and_fire_event(event, 'keyup');
+                            });
+                        } else {
+                            // Desktop:
+                            control.addEventListener('click', function (event) {
+                                create_and_fire_event(event, 'keydown');
+                                window.setTimeout(function () {
+                                    create_and_fire_event(event, 'keyup');
+                                }, 100);
+                            });
+                        }
+                    }
+                );
+            });
+        </script>
+        {{{ SCRIPT }}}
+    </body>
+</html>
